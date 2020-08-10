@@ -1,0 +1,1 @@
+# cloud-platform-report-stateless-resources
