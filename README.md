@@ -27,6 +27,8 @@ report_stateless_subnets(ec2,vpc_ids_with_names_from_state)
 report_stateless_route_tables(ec2, vpc_ids_with_names_from_state)
 ```
 
+The ```report-stateless-cloud-platform.rb``` scripts reports on the ```route 53 hosted zones``` 
+
 Requirements:
 
 Below are the followng requirements
@@ -42,4 +44,5 @@ Below are the followng requirements
 Modules
 
 Key methods such as getting data from AWS and the state file are independent and reside in modules, under the ```modules```folder. 
-Currently only the ```report-stateless-cloud-platform.rb``` script is making use of the modules and the  ```report-stateless-cloud-platform-network.rb``` script is yet to be re-factored for it to utilise the modules.
+Currently only the ```report-stateless-cloud-platform.rb``` script is making use of the modules and the  ```report-stateless-cloud-platform-network.rb``` script is yet to be re-factored for it to utilise the modules. Once re-factored it maybe more efficient to combine the Ruby scripts into one single script. 
+
