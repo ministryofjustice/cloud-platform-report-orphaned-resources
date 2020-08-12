@@ -37,6 +37,8 @@ Below are the followng requirements
 
 (2) Ensure Ruby 2.7.1 or greater is installed on the environment.
 
+(3) Run ```bundle install`` from the root folde of the repository to fetch the required gems
+
 Modules
 
 Key methods such as getting data from AWS and the state file are independent and reside in modules, under the ```modules```folder. 
