@@ -8,8 +8,10 @@ require "aws-sdk-s3"
 require 'slack-notifier'
 
 
+require "./modules/helper_methods.rb"
+include Helper
 @state_file_path_local = "state-files/cloud-platform-network"
-@slack_token = ENV["SLACK_TOKEN"]
+
 
 #*******Methods to get resource data directly from AWS using ruby sdk***************
 
@@ -317,7 +319,7 @@ def compare_and_report_data(aws_data, state_data, vpc_name, resource)
       pp 'ACTUAL:'
       pp aws_data_str
 
-      send_slack_notification(@slack_token, 'VPC: '+vpc_name+' | RESOURCE: '+resource+' | STATE: ('+state_data_str+') | ACTUAL: ('+aws_data_str+')')
+      send_slack_notification(ENV["SLACK_TOKEN"], 'VPC: '+vpc_name+' | RESOURCE: '+resource+' | STATE: ('+state_data_str+') | ACTUAL: ('+aws_data_str+')')
     end
   rescue => e
   end
