@@ -21,10 +21,6 @@ module Helper
         return host_zones_filtered
     end
 
-
-    
-
-
     #******** Compare two sets of arrays and send to slack **********************
 
     def compare_and_report_data_host_zones(aws_data, state_data, resource)

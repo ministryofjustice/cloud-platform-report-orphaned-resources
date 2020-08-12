@@ -326,37 +326,3 @@ def compare_and_report_data(aws_data, state_data, vpc_name, resource)
 end
 
 
-
-#pp route_tables_assoc_for_subnet(ec2, "subnet-05457126ff452defb")
-
-
-#pp route_tables_for_subnet(ec2, "subnet-04aa61fd2c67cc729")
-
-#binding.pry
-report_stateless_natgateways(ec2,vpc_ids_with_names_from_state)
-report_stateless_subnets(ec2,vpc_ids_with_names_from_state)
-report_stateless_route_tables(ec2, vpc_ids_with_names_from_state)
-#report_stateless_route_tables_assoc(ec2,vpc_ids_with_names_from_state)
-#pp subnet_ids_from_terraform_state(@state_file_path_local+"/vpc-network-iawan-test.tfstate")
-
-#pp nat_gateway_ids_for_vpc(ec2, "vpc-0c16457fd570a1f0b")
-#pp nat_gateway_ids_from_terraform_state(@state_file_path_local+"/vpc-network-iawan-test.tfstate")
-
-#********Get the internet gateway*************************************************
-
-#pp internet_gateway_ids_for_vpc(ec2)
-#pp internet_gateway_ids_from_terraform_state("terraform.tfstate")
-
-#********Get the vpc ids***********************
-#pp vpc_ids(ec2)
-
-#*********Get the subnets*******************
-
-#pp subnets_ids_for_vpc(ec2, "vpc-0c16457fd570a1f0b")
-
-
-#****Get the route table ids for each subnet*******
-
-#pp route_tables_for_subnet(ec2, "subnet-0386053fb92e69994")
-#route_tables_for_subnet(ec2, "subnet-05fe20e709ed69201")
-
