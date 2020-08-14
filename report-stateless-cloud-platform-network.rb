@@ -225,11 +225,7 @@ statefiles = StatelessResources::TerraformStateManager.new(
   dir: "state-files/cloud-platform-network"
 ).download_files
 
-vpc_ids_from_aws = get_vpc_ids_from_aws(ec2)
-vpc_ids_from_state = vpc_ids(statefiles)
-
-# combine both the aws vpc ids with those fetched from the state
-unlisted_vpcs = vpc_ids_from_aws - vpc_ids_from_state
+unlisted_vpcs = get_vpc_ids_from_aws(ec2) - vpc_ids(statefiles)
 
 # This is a temporary hack so that I can confirm the code still works as I move
 # parts of it around. Once proper unit tests exist, this will be deleted.
