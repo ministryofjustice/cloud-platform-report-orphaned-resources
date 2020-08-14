@@ -124,13 +124,10 @@ def get_vpc_ids_from_aws(client)
   vpc_ids_aws
 end
 
-# Iterate each state file for each vpc ( by name ) and get the corresponding vpc ids
-def get_vpc_ids_with_names_from_state(local_statefiles)
+def vpc_ids(local_statefiles)
   local_statefiles.map do |file|
     data = JSON.parse(File.read(file))
-    id = data.dig("outputs", "vpc_id", "value")
-    name = data.dig("outputs", "vpc_name", "value")
-    "#{id.strip}|#{name}" unless id.nil?
+    data.dig("outputs", "vpc_id", "value")
   end.compact
 end
 
@@ -229,13 +226,7 @@ statefiles = StatelessResources::TerraformStateManager.new(
 ).download_files
 
 vpc_ids_from_aws = get_vpc_ids_from_aws(ec2)
-vpc_ids_with_names_from_state = get_vpc_ids_with_names_from_state(statefiles)
-vpc_ids_from_state = []
-
-vpc_ids_with_names_from_state.each do |vpc_id_with_name|
-  each_vpc_id_with_name = vpc_id_with_name.split("|")
-  vpc_ids_from_state.push(each_vpc_id_with_name[0])
-end
+vpc_ids_from_state = vpc_ids(statefiles)
 
 # combine both the aws vpc ids with those fetched from the state
 unlisted_vpcs = vpc_ids_from_aws - vpc_ids_from_state
