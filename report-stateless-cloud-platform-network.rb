@@ -1,14 +1,9 @@
 #!/usr/bin/env ruby
 
 require "pry-byebug"
-require "json"
-require "bundler/setup"
-require "aws-sdk-ec2"
-require "aws-sdk-s3"
-require 'slack-notifier'
 
+require "./lib/stateless_resources"
 
-require "./modules/helper_methods.rb"
 include Helper
 @state_file_path_local = "state-files/cloud-platform-network"
 
