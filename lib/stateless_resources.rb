@@ -2,7 +2,7 @@ require "json"
 require "bundler/setup"
 require "aws-sdk-ec2"
 require "aws-sdk-s3"
-require 'slack-notifier'
+require "slack-notifier"
 
 require_relative "./stateless_resources/terraform_state_manager"
 
