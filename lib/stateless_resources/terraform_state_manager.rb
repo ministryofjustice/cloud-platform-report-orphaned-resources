@@ -15,7 +15,7 @@ module StatelessResources
       s3_keys_list.each do |each_key|
         each_key_list = each_key.split('/')
         statefile_name_output = "#{dir}/vpc-network-"+each_key_list[1]+".tfstate"
-        download_state_from_s3(s3client, bucket, each_key, statefile_name_output)
+        s3client.bucket(bucket).object(each_key).get(response_target: statefile_name_output)
       end
     end
 

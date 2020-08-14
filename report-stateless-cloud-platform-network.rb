@@ -180,14 +180,6 @@ def get_vpc_ids_with_names_from_state(s3)
 
 end
 
-
-def download_state_from_s3(s3, bucket_name, key, statefile_path)
-  # Loop through all the dynamically fetched vpc names and download the network state file from s3
-  obj = s3.bucket(bucket_name).object(key)
-  obj.get(response_target: statefile_path)
-end
-
-
 ###########REPORT STATELESS RESOURCES######################
 
 def send_slack_notification(slack_token, message)
