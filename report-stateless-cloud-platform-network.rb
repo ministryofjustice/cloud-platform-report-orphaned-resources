@@ -257,7 +257,6 @@ expected = [
   "vpc-0b857224f5167262d",
   "vpc-0bab8ed9b758fe5ae",
   "vpc-0c4c69a47d9d1cde4",
-  "vpc-0d652e8b6f47933f0",
 ]
 binding.pry unless unlisted_vpcs.sort == expected
 puts "pass"
