@@ -15,7 +15,9 @@ module StatelessResources
       keys.map do |key|
         name = key.split("/")[1] # e.g. "cloud-platform-network/live-1/terraform.tfstate" -> "live-1"
         outfile = "#{dir}/#{name}.tfstate"
-        s3client.bucket(bucket).object(key).get(response_target: outfile)
+        unless FileTest.exists?(outfile)
+          s3client.bucket(bucket).object(key).get(response_target: outfile)
+        end
         outfile
       end
     end
