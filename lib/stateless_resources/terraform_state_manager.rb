@@ -10,12 +10,12 @@ module StatelessResources
     end
 
     def download_files
-      s3_keys_list = s3client.bucket("cloud-platform-terraform-state").objects(prefix:'cloud-platform-network/', delimiter: '').collect(&:key)
+      keys = s3client.bucket("cloud-platform-terraform-state").objects(prefix:'cloud-platform-network/', delimiter: '').collect(&:key)
 
-      s3_keys_list.each do |each_key|
-        each_key_list = each_key.split('/')
-        statefile_name_output = "#{dir}/vpc-network-"+each_key_list[1]+".tfstate"
-        s3client.bucket(bucket).object(each_key).get(response_target: statefile_name_output)
+      keys.each do |key|
+        name = key.split("/")[1] # e.g. "cloud-platform-network/live-1/terraform.tfstate" -> "live-1"
+        outfile = "#{dir}/vpc-network-#{name}.tfstate"
+        s3client.bucket(bucket).object(key).get(response_target: outfile)
       end
     end
 
