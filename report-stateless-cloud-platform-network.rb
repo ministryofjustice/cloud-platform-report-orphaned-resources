@@ -110,11 +110,9 @@ end
 def get_state_vpc_names_from_s3key(s3)
   s3_state_bucket_keys = s3.bucket("cloud-platform-terraform-state").objects(prefix: "cloud-platform-network", delimiter: "").collect(&:key)
 
-  keys = []
   vpc_names = []
-  s3_state_bucket_keys.each { |vpc_name| keys << vpc_name.delete(" ") }
 
-  keys.each do |key|
+  s3_state_bucket_keys.each do |key|
     key_split = key.split("/")
     vpc_names.push(key_split[1])
   end
