@@ -4,5 +4,6 @@ require "aws-sdk-ec2"
 require "aws-sdk-s3"
 require 'slack-notifier'
 
-require "./modules/helper_methods.rb"
+require_relative "./stateless_resources/terraform_state_manager"
 
+require "./modules/helper_methods.rb"

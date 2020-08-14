@@ -158,25 +158,6 @@ def get_vpc_ids_from_aws(client)
 
 end
 
-# all the state files for each vpc
-def download_state_files(s3)
-
-  #Iterate each state file for each vpc ( by name ) to get the bucket key containing the vpc name
-  s3_keys_list = []
-  s3_keys_list = s3.bucket("cloud-platform-terraform-state").objects(prefix:'cloud-platform-network/', delimiter: '').collect(&:key)
-  s3_keys_list.drop(1).each do |each_key|
-      begin
-          #extract the name from the key
-          each_key_list = each_key.split('/')
-          bucket_name = "cloud-platform-terraform-state"
-          statefile_name_output = @state_file_path_local+"/vpc-network-"+each_key_list[1]+".tfstate"
-          download_state_from_s3(s3, bucket_name, each_key, statefile_name_output)
-      rescue => e
-      end
-  end
-end
-
-
 # The s3 key for the network state contains the vpc name. We therefore need to dynamically fetch each name in the state
 # and iterate through them to get the corresponding vpc id and vpc name. The state file can then be downloaded for each vpc and finally getting vpc id
 def get_vpc_ids_with_names_from_state(s3)
@@ -304,7 +285,12 @@ s3 = Aws::S3::Resource.new(region:'eu-west-1', profile: ENV["AWS_PROFILE"])
 #binding.pry
 ec2 = Aws::EC2::Client.new(region:'eu-west-2', profile: ENV["AWS_PROFILE"])
 
-download_state_files(s3)
+StatelessResources::TerraformStateManager.new(
+  s3client: s3,
+  bucket: "cloud-platform-terraform-state",
+  prefix: "cloud-platform-network/",
+  dir: "state-files/cloud-platform-network"
+).download_files
 
 vpc_ids_from_aws = get_vpc_ids_from_aws(ec2)
 vpc_ids_with_names_from_state = get_vpc_ids_with_names_from_state(s3)
@@ -331,5 +317,5 @@ expected = [
   "vpc-0c4c69a47d9d1cde4",
   "vpc-0d652e8b6f47933f0"
 ]
-raise unless (unlisted_vpcs.sort == expected)
+binding.pry unless (unlisted_vpcs.sort == expected)
 puts "pass"
