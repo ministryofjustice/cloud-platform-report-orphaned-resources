@@ -134,7 +134,7 @@ def get_vpc_ids_with_names_from_state(local_statefiles)
     vpc_id_from_statefile = data.dig("outputs", "vpc_id", "value")
     vpc_name_from_statefile = data.dig("outputs", "vpc_name", "value")
     unless vpc_id_from_statefile.nil?
-      vpc_ids_with_names_in_state.push(vpc_id_from_statefile.strip + "|" + vpc_name_from_statefile.to_s)
+      vpc_ids_with_names_in_state.push("#{vpc_id_from_statefile.strip}|#{vpc_name_from_statefile}")
     end
   end
 
