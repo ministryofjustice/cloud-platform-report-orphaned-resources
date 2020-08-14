@@ -14,7 +14,7 @@ module StatelessResources
 
       keys.each do |key|
         name = key.split("/")[1] # e.g. "cloud-platform-network/live-1/terraform.tfstate" -> "live-1"
-        outfile = "#{dir}/vpc-network-#{name}.tfstate"
+        outfile = "#{dir}/#{name}.tfstate"
         s3client.bucket(bucket).object(key).get(response_target: outfile)
       end
     end

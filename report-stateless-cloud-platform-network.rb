@@ -167,7 +167,7 @@ def get_vpc_ids_with_names_from_state(s3)
   #Iterate each state file for each vpc ( by name ) and get the corresponding vpc ids
   get_state_vpc_names_from_s3key(s3).each do |vpc_name_in_key|
     begin
-      str = File.read(@state_file_path_local+"/vpc-network-"+vpc_name_in_key+".tfstate")
+      str = File.read(@state_file_path_local+"/"+vpc_name_in_key+".tfstate")
       data = JSON.parse(str)
       vpc_id_from_statefile = data['outputs']['vpc_id']['value']
       vpc_name_from_statefile = data['outputs']['vpc_name']['value']
