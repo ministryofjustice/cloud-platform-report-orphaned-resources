@@ -106,10 +106,10 @@ def route_table_associations_from_terraform_state(statefile)
     str = File.read(statefile)
     data = JSON.parse(str)
     list = data["resources"]
-    route_table_association_pvt = list.filter { |m| m["type"] == "aws_route_table_association" }[3] # The private route tbl assoc are in iteration 3 
-    route_table_association_pub = list.filter { |m| m["type"] == "aws_route_table_association" }[4] # The private route tbl assoc are in iteration 4 
-    route_table_association_pvt_list = route_table_association_pvt["instances"].map { |route_tbl_assoc| route_tbl_assoc.dig("attributes", "id") }.sort 
-    route_table_association_pub_list = route_table_association_pub["instances"].map { |route_tbl_assoc| route_tbl_assoc.dig("attributes", "id") }.sort 
+    route_table_association_pvt = list.filter { |m| m["type"] == "aws_route_table_association" }[3] # The private route tbl assoc are in iteration 3
+    route_table_association_pub = list.filter { |m| m["type"] == "aws_route_table_association" }[4] # The private route tbl assoc are in iteration 4
+    route_table_association_pvt_list = route_table_association_pvt["instances"].map { |route_tbl_assoc| route_tbl_assoc.dig("attributes", "id") }.sort
+    route_table_association_pub_list = route_table_association_pub["instances"].map { |route_tbl_assoc| route_tbl_assoc.dig("attributes", "id") }.sort
     return route_table_association_pvt_list | route_table_association_pub_list # Add the public route tbl assoc (in iteration 2) to the private ones before returning
 
   rescue => e
@@ -133,7 +133,7 @@ def get_state_vpc_names_from_s3key(s3)
   keys = []
   vpc_names = []
   s3_state_bucket_keys.each { |vpc_name| keys << vpc_name.delete(' ') }
-  
+
   keys.each do |key|
     key_split = key.split('/')
     vpc_names.push(key_split[1])
@@ -141,14 +141,14 @@ def get_state_vpc_names_from_s3key(s3)
 
   return vpc_names
 
-end 
+end
 
 
 def get_vpc_ids_from_aws(client)
 
   vpc_ids_aws = []
 
-  # Get the whole data for all vpcs 
+  # Get the whole data for all vpcs
   data = client.describe_vpcs()
 
   # Create a file containing the vpc ids only
@@ -161,14 +161,14 @@ def get_vpc_ids_from_aws(client)
   #vpc_actual_ids.shift(1)
   return vpc_ids_aws
 
-end 
+end
 
-# all the state files for each vpc 
+# all the state files for each vpc
 def download_state_files(s3)
 
   #Iterate each state file for each vpc ( by name ) to get the bucket key containing the vpc name
   s3_keys_list = []
-  s3_keys_list = s3.bucket("cloud-platform-terraform-state").objects(prefix:'cloud-platform-network/', delimiter: '').collect(&:key) 
+  s3_keys_list = s3.bucket("cloud-platform-terraform-state").objects(prefix:'cloud-platform-network/', delimiter: '').collect(&:key)
   s3_keys_list.drop(1).each do |each_key|
       begin
           #extract the name from the key
@@ -176,7 +176,7 @@ def download_state_files(s3)
           bucket_name = "cloud-platform-terraform-state"
           statefile_name_output = @state_file_path_local+"/vpc-network-"+each_key_list[1]+".tfstate"
           download_state_from_s3(s3, bucket_name, each_key, statefile_name_output)
-      rescue => e 
+      rescue => e
       end
   end
 end
@@ -187,7 +187,7 @@ end
 def get_vpc_ids_with_names_from_state(s3)
 
   vpc_ids_with_names_in_state = []
-  
+
   #Iterate each state file for each vpc ( by name ) and get the corresponding vpc ids
   get_state_vpc_names_from_s3key(s3).each do |vpc_name_in_key|
     begin
@@ -210,28 +210,6 @@ def download_state_from_s3(s3, bucket_name, key, statefile_path)
   obj = s3.bucket(bucket_name).object(key)
   obj.get(response_target: statefile_path)
 end
-
-s3 = Aws::S3::Resource.new(region:'eu-west-1', profile: ENV["AWS_PROFILE"])
-
-#binding.pry
-ec2 = Aws::EC2::Client.new(region:'eu-west-2', profile: ENV["AWS_PROFILE"])
-
-download_state_files(s3)
-
-vpc_ids_from_aws = get_vpc_ids_from_aws(ec2)
-vpc_ids_with_names_from_state = get_vpc_ids_with_names_from_state(s3)
-vpc_ids_from_state = []
-
-vpc_ids_with_names_from_state.each do |vpc_id_with_name|
-  each_vpc_id_with_name = vpc_id_with_name.split('|')
-  vpc_ids_from_state.push(each_vpc_id_with_name[0])
-end
-
-# combine both the aws vpc ids with those fetched from the state
-vpc_ids_all = vpc_ids_from_aws | vpc_ids_from_state
-
-# remove any duplicates from the combined vpc ids. The end array will only contain the stateless vpc ids
-vpc_ids_stateless = vpc_ids_all.uniq
 
 
 ###########REPORT STATELESS RESOURCES######################
@@ -275,7 +253,7 @@ def report_stateless_route_tables(ec2, vpc_ids_with_names_from_state)
       subnets_ids_for_vpc_arr.each do |subnet_id|
         route_tables_ids_arr.push(route_tables_for_subnet(ec2, subnet_id).strip)
       end
-      # each of the public subnets are associated to the same route table. The public route table will be duplicated for every public subnet. So we can remove these. 
+      # each of the public subnets are associated to the same route table. The public route table will be duplicated for every public subnet. So we can remove these.
       route_tables_ids_arr = route_tables_ids_arr.uniq
       compare_and_report_data(route_tables_ids_arr, route_table_ids_from_terraform_state(@state_file_path_local+"/vpc-network-"+vpc_name+".tfstate"), vpc_name, "route-tables")
     end
@@ -325,4 +303,26 @@ def compare_and_report_data(aws_data, state_data, vpc_name, resource)
   end
 end
 
+
+s3 = Aws::S3::Resource.new(region:'eu-west-1', profile: ENV["AWS_PROFILE"])
+
+#binding.pry
+ec2 = Aws::EC2::Client.new(region:'eu-west-2', profile: ENV["AWS_PROFILE"])
+
+download_state_files(s3)
+
+vpc_ids_from_aws = get_vpc_ids_from_aws(ec2)
+vpc_ids_with_names_from_state = get_vpc_ids_with_names_from_state(s3)
+vpc_ids_from_state = []
+
+vpc_ids_with_names_from_state.each do |vpc_id_with_name|
+  each_vpc_id_with_name = vpc_id_with_name.split('|')
+  vpc_ids_from_state.push(each_vpc_id_with_name[0])
+end
+
+# combine both the aws vpc ids with those fetched from the state
+vpc_ids_all = vpc_ids_from_aws | vpc_ids_from_state
+
+# remove any duplicates from the combined vpc ids. The end array will only contain the stateless vpc ids
+vpc_ids_stateless = vpc_ids_all.uniq
 
