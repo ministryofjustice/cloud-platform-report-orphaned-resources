@@ -1,5 +1,5 @@
-require "json"
 require "bundler/setup"
+require "json"
 require "aws-sdk-ec2"
 require "aws-sdk-s3"
 require "slack-notifier"
