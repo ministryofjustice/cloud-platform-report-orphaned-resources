@@ -107,7 +107,7 @@ def internet_gateway_ids_from_terraform_state(statefile)
   nat_gateway["instances"].map { |ng| ng.dig("attributes", "gateway_id") }.sort
 end
 
-def get_vpc_ids_from_aws(ec2client)
+def vpc_ids_from_aws(ec2client)
   ec2client.describe_vpcs.vpcs.map { |vpc| vpc.vpc_id }.sort
 end
 
@@ -212,7 +212,7 @@ statefiles = StatelessResources::TerraformStateManager.new(
   dir: "state-files/cloud-platform-network"
 ).download_files
 
-unlisted_vpcs = get_vpc_ids_from_aws(ec2) - vpc_ids(statefiles)
+unlisted_vpcs = vpc_ids_from_aws(ec2) - vpc_ids(statefiles)
 
 # This is a temporary hack so that I can confirm the code still works as I move
 # parts of it around. Once proper unit tests exist, this will be deleted.
