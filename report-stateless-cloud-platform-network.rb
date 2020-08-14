@@ -131,10 +131,11 @@ def get_vpc_ids_with_names_from_state(local_statefiles)
   local_statefiles.each do |file|
     str = File.read(file)
     data = JSON.parse(str)
-    vpc_id_from_statefile = data["outputs"]["vpc_id"]["value"]
-    vpc_name_from_statefile = data["outputs"]["vpc_name"]["value"]
-    vpc_ids_with_names_in_state.push(vpc_id_from_statefile.strip + "|" + vpc_name_from_statefile)
-  rescue => e
+    vpc_id_from_statefile = data.dig("outputs", "vpc_id", "value")
+    vpc_name_from_statefile = data.dig("outputs", "vpc_name", "value")
+    unless vpc_id_from_statefile.nil?
+      vpc_ids_with_names_in_state.push(vpc_id_from_statefile.strip + "|" + vpc_name_from_statefile.to_s)
+    end
   end
 
   vpc_ids_with_names_in_state
