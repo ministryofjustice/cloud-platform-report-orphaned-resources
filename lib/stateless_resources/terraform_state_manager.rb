@@ -12,7 +12,7 @@ module StatelessResources
     def download_files
       s3_keys_list = s3client.bucket("cloud-platform-terraform-state").objects(prefix:'cloud-platform-network/', delimiter: '').collect(&:key)
 
-      s3_keys_list.drop(1).each do |each_key|
+      s3_keys_list.each do |each_key|
         begin
           #extract the name from the key
           each_key_list = each_key.split('/')

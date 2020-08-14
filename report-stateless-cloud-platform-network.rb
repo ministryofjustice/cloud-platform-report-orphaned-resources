@@ -310,7 +310,6 @@ expected = [
   "vpc-0267b8f3c5fae7d13",
   "vpc-04e9f82e4d988355a",
   "vpc-057ac86d",
-  "vpc-07d245458bde53577",
   "vpc-0a9ab8481d742855e",
   "vpc-0b857224f5167262d",
   "vpc-0bab8ed9b758fe5ae",
