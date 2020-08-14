@@ -321,8 +321,4 @@ vpc_ids_with_names_from_state.each do |vpc_id_with_name|
 end
 
 # combine both the aws vpc ids with those fetched from the state
-vpc_ids_all = vpc_ids_from_aws | vpc_ids_from_state
-
-# remove any duplicates from the combined vpc ids. The end array will only contain the stateless vpc ids
-vpc_ids_stateless = vpc_ids_all.uniq
-
+unlisted_vpcs = vpc_ids_from_aws - vpc_ids_from_state
