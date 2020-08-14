@@ -107,19 +107,6 @@ def internet_gateway_ids_from_terraform_state(statefile)
   nat_gateway["instances"].map { |ng| ng.dig("attributes", "gateway_id") }.sort
 end
 
-def get_state_vpc_names_from_s3key(s3)
-  s3_state_bucket_keys = s3.bucket("cloud-platform-terraform-state").objects(prefix: "cloud-platform-network", delimiter: "").collect(&:key)
-
-  vpc_names = []
-
-  s3_state_bucket_keys.each do |key|
-    key_split = key.split("/")
-    vpc_names.push(key_split[1])
-  end
-
-  vpc_names
-end
-
 def get_vpc_ids_from_aws(client)
   vpc_ids_aws = []
 
@@ -137,14 +124,12 @@ def get_vpc_ids_from_aws(client)
   vpc_ids_aws
 end
 
-# The s3 key for the network state contains the vpc name. We therefore need to dynamically fetch each name in the state
-# and iterate through them to get the corresponding vpc id and vpc name. The state file can then be downloaded for each vpc and finally getting vpc id
-def get_vpc_ids_with_names_from_state(s3)
+def get_vpc_ids_with_names_from_state(local_statefiles)
   vpc_ids_with_names_in_state = []
 
   # Iterate each state file for each vpc ( by name ) and get the corresponding vpc ids
-  get_state_vpc_names_from_s3key(s3).each do |vpc_name_in_key|
-    str = File.read(@state_file_path_local + "/" + vpc_name_in_key + ".tfstate")
+  local_statefiles.each do |file|
+    str = File.read(file)
     data = JSON.parse(str)
     vpc_id_from_statefile = data["outputs"]["vpc_id"]["value"]
     vpc_name_from_statefile = data["outputs"]["vpc_name"]["value"]
@@ -242,7 +227,7 @@ s3 = Aws::S3::Resource.new(region: "eu-west-1", profile: ENV["AWS_PROFILE"])
 # binding.pry
 ec2 = Aws::EC2::Client.new(region: "eu-west-2", profile: ENV["AWS_PROFILE"])
 
-StatelessResources::TerraformStateManager.new(
+statefiles = StatelessResources::TerraformStateManager.new(
   s3client: s3,
   bucket: "cloud-platform-terraform-state",
   prefix: "cloud-platform-network/",
@@ -250,7 +235,7 @@ StatelessResources::TerraformStateManager.new(
 ).download_files
 
 vpc_ids_from_aws = get_vpc_ids_from_aws(ec2)
-vpc_ids_with_names_from_state = get_vpc_ids_with_names_from_state(s3)
+vpc_ids_with_names_from_state = get_vpc_ids_with_names_from_state(statefiles)
 vpc_ids_from_state = []
 
 vpc_ids_with_names_from_state.each do |vpc_id_with_name|
