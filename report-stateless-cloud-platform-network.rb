@@ -127,13 +127,10 @@ end
 # Iterate each state file for each vpc ( by name ) and get the corresponding vpc ids
 def get_vpc_ids_with_names_from_state(local_statefiles)
   local_statefiles.map do |file|
-    str = File.read(file)
-    data = JSON.parse(str)
-    vpc_id_from_statefile = data.dig("outputs", "vpc_id", "value")
-    vpc_name_from_statefile = data.dig("outputs", "vpc_name", "value")
-    unless vpc_id_from_statefile.nil?
-      "#{vpc_id_from_statefile.strip}|#{vpc_name_from_statefile}"
-    end
+    data = JSON.parse(File.read(file))
+    id = data.dig("outputs", "vpc_id", "value")
+    name = data.dig("outputs", "vpc_name", "value")
+    "#{id.strip}|#{name}" unless id.nil?
   end.compact
 end
 
