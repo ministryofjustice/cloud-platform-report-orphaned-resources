@@ -107,21 +107,8 @@ def internet_gateway_ids_from_terraform_state(statefile)
   nat_gateway["instances"].map { |ng| ng.dig("attributes", "gateway_id") }.sort
 end
 
-def get_vpc_ids_from_aws(client)
-  vpc_ids_aws = []
-
-  # Get the whole data for all vpcs
-  data = client.describe_vpcs
-
-  # Create a file containing the vpc ids only
-  File.open("output-files/vpc_actual_ids.txt", "w") do |f|
-    f.puts data.vpcs.map { |vpc| vpc.vpc_id }.sort
-  end
-
-  File.open("output-files/vpc_actual_ids.txt").each { |vpc| vpc_ids_aws << vpc.strip }
-
-  # vpc_actual_ids.shift(1)
-  vpc_ids_aws
+def get_vpc_ids_from_aws(ec2client)
+  ec2client.describe_vpcs.vpcs.map { |vpc| vpc.vpc_id }.sort
 end
 
 def vpc_ids(local_statefiles)
