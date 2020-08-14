@@ -124,21 +124,17 @@ def get_vpc_ids_from_aws(client)
   vpc_ids_aws
 end
 
+# Iterate each state file for each vpc ( by name ) and get the corresponding vpc ids
 def get_vpc_ids_with_names_from_state(local_statefiles)
-  vpc_ids_with_names_in_state = []
-
-  # Iterate each state file for each vpc ( by name ) and get the corresponding vpc ids
-  local_statefiles.each do |file|
+  local_statefiles.map do |file|
     str = File.read(file)
     data = JSON.parse(str)
     vpc_id_from_statefile = data.dig("outputs", "vpc_id", "value")
     vpc_name_from_statefile = data.dig("outputs", "vpc_name", "value")
     unless vpc_id_from_statefile.nil?
-      vpc_ids_with_names_in_state.push("#{vpc_id_from_statefile.strip}|#{vpc_name_from_statefile}")
+      "#{vpc_id_from_statefile.strip}|#{vpc_name_from_statefile}"
     end
-  end
-
-  vpc_ids_with_names_in_state
+  end.compact
 end
 
 # ##########REPORT STATELESS RESOURCES######################
