@@ -46,7 +46,21 @@ end
 ##############################################
 
 files = download_state_files("cloud-platform-terraform-state", "state-files")
-binding.pry
 
+list = []
+
+files.each do |file|
+  unless FileTest.empty?(file)
+    data = JSON.parse(File.read(file))
+    if data.has_key?("resources")
+      zones = data.fetch("resources").filter { |res| res["type"] == "aws_route53_zone" }
+      list += zones.map { |zone| zone.fetch("instances").map { |instance| instance.dig("attributes", "name") } }
+    end
+  end
+end
+
+hosted_zones = list.flatten.map { |name| name.sub(/\.$/, "") }.uniq
+
+binding.pry
 
 puts "done"
