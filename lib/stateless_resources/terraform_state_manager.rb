@@ -14,6 +14,13 @@ module StatelessResources
       keys.map { |key| download_terraform_state(key) }
     end
 
+    def download_terraform_states_for_prefixes(prefixes)
+      objects_matching_prefixes(prefixes)
+        .map { |object| download_terraform_state(object.key) }
+    end
+
+    private
+
     def download_terraform_state(key)
       name = key.split("/")[-2] # e.g. "cloud-platform-network/live-1/terraform.tfstate" -> "live-1"
       outfile = "#{dir}/#{name}.tfstate"
@@ -22,5 +29,15 @@ module StatelessResources
       end
       outfile
     end
+
+    def objects_matching_prefixes(prefixes)
+      objects = s3client.bucket(bucket).objects
+
+      objects.filter do |object|
+        prefix = object.key.split("/").first
+        prefixes.include?(prefix)
+      end
+    end
+
   end
 end
