@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 
-require "pry-byebug"
 require_relative "../lib/stateless_resources"
 
 AWS_REGION = "eu-west-2"
@@ -8,7 +7,7 @@ AWS_REGION = "eu-west-2"
 def route53_hosted_zones
   route53 = Aws::Route53::Client.new(region: AWS_REGION, profile: ENV["AWS_PROFILE"])
   zone_data = route53.list_hosted_zones
-  zone_data.hosted_zones.map { |zone| zone.name }.uniq.sort
+  zone_data.hosted_zones.map { |zone| zone.name.sub(/\.$/, "") }.uniq.sort
 end
 
 # Download all the state files for each vpc
@@ -48,6 +47,7 @@ end
 
 ##############################################
 
-hosted_zones = zones_from_terraform_states(download_state_files)
+puts "The following zones exist in AWS but not in any terraform state:\n"
 
-pp hosted_zones
+(route53_hosted_zones - zones_from_terraform_states(download_state_files))
+  .each { |name| puts "  #{name}" }
