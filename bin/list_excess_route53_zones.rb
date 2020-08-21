@@ -27,24 +27,27 @@ def download_state_files
   ).download_terraform_states_for_prefixes(prefixes)
 end
 
-##############################################
+def zones_from_terraform_states(files)
+  list = files.inject([]) do |arr, file|
+    arr += zones_from_terraform_state(file)
+  end
+  list.flatten.map { |name| name.sub(/\.$/, "") }.uniq
+end
 
-files = download_state_files
+def zones_from_terraform_state(statefile)
+  return [] if FileTest.empty?(statefile)
 
-list = []
-
-files.each do |file|
-  unless FileTest.empty?(file)
-    data = JSON.parse(File.read(file))
-    if data.has_key?("resources")
-      zones = data.fetch("resources").filter { |res| res["type"] == "aws_route53_zone" }
-      list += zones.map { |zone| zone.fetch("instances").map { |instance| instance.dig("attributes", "name") } }
-    end
+  data = JSON.parse(File.read(statefile))
+  if data.has_key?("resources")
+    zones = data.fetch("resources").filter { |res| res["type"] == "aws_route53_zone" }
+    zones.map { |zone| zone.fetch("instances").map { |instance| instance.dig("attributes", "name") } }.flatten
+  else
+    []
   end
 end
 
-hosted_zones = list.flatten.map { |name| name.sub(/\.$/, "") }.uniq
+##############################################
 
-binding.pry
+hosted_zones = zones_from_terraform_states(download_state_files)
 
-puts "done"
+pp hosted_zones
