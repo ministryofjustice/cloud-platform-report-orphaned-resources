@@ -10,5 +10,3 @@ require "slack-notifier"
 
 require_relative "./stateless_resources/terraform_state_manager"
 require_relative "./stateless_resources/aws_resources"
-
-require "./modules/helper_methods.rb"
