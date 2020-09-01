@@ -9,11 +9,11 @@ include Helper
 
 # *******Methods to get resource data directly from AWS using ruby sdk***************
 
-def nat_gateway_ids_for_vpc(client, vpc_id)
-  filter = [{name: "vpc-id", values: [vpc_id]}]
-  data = client.describe_nat_gateways(filter: filter)
-  data.nat_gateways.map { |ng| ng.nat_gateway_id }.sort
-end
+# def nat_gateway_ids_for_vpc(client, vpc_id)
+#   filter = [{name: "vpc-id", values: [vpc_id]}]
+#   data = client.describe_nat_gateways(filter: filter)
+#   data.nat_gateways.map { |ng| ng.nat_gateway_id }.sort
+# end
 
 def subnets_ids_for_vpc(client, vpc_id)
   filters = [{name: "vpc-id", values: [vpc_id]}]
@@ -50,20 +50,20 @@ def internet_gateway_ids_for_vpc(client)
   data.internet_gateways.map { |ng| ng.internet_gateway_id }.sort
 end
 
-def vpc_ids(client)
-  data = client.describe_vpcs
-  data.vpcs.map { |vpc| vpc.vpc_id }.sort
-end
+# def vpc_ids(client)
+#   data = client.describe_vpcs
+#   data.vpcs.map { |vpc| vpc.vpc_id }.sort
+# end
 
 # **********Methods to get data from tf state files****************
 
-def nat_gateway_ids_from_terraform_state(statefile)
-  str = File.read(statefile)
-  data = JSON.parse(str)
-  list = data["resources"]
-  nat_gateway = list.filter { |m| m["name"] == "private_nat_gateway" }.first
-  nat_gateway["instances"].map { |ng| ng.dig("attributes", "nat_gateway_id") }.sort
-end
+# def nat_gateway_ids_from_terraform_state(statefile)
+#   str = File.read(statefile)
+#   data = JSON.parse(str)
+#   list = data["resources"]
+#   nat_gateway = list.filter { |m| m["name"] == "private_nat_gateway" }.first
+#   nat_gateway["instances"].map { |ng| ng.dig("attributes", "nat_gateway_id") }.sort
+# end
 
 def subnet_ids_from_terraform_state(statefile)
   str = File.read(statefile)
@@ -112,10 +112,10 @@ def vpc_ids_from_aws(ec2client)
 end
 
 def vpc_ids(local_statefiles)
-  local_statefiles.map do |file|
+  local_statefiles.map { |file|
     data = JSON.parse(File.read(file))
     data.dig("outputs", "vpc_id", "value")
-  end.compact
+  }.compact
 end
 
 # ##########REPORT STATELESS RESOURCES######################
@@ -129,14 +129,14 @@ end
 
 # ******** Compare the natgateway ids **********************
 
-def report_stateless_natgateways(ec2, vpc_ids_with_names_from_state)
-  vpc_ids_with_names_from_state.each do |vpc_id_with_name|
-    each_vpc_id_with_name = vpc_id_with_name.split("|")
-    vpc_id = each_vpc_id_with_name[0]
-    vpc_name = each_vpc_id_with_name[1]
-    compare_and_report_data(nat_gateway_ids_for_vpc(ec2, vpc_id), nat_gateway_ids_from_terraform_state(@state_file_path_local + "/vpc-network-" + vpc_name + ".tfstate"), vpc_name, "nat-gateways")
-  end
-end
+# def report_stateless_natgateways(ec2, vpc_ids_with_names_from_state)
+#   vpc_ids_with_names_from_state.each do |vpc_id_with_name|
+#     each_vpc_id_with_name = vpc_id_with_name.split("|")
+#     vpc_id = each_vpc_id_with_name[0]
+#     vpc_name = each_vpc_id_with_name[1]
+#     compare_and_report_data(nat_gateway_ids_for_vpc(ec2, vpc_id), nat_gateway_ids_from_terraform_state(@state_file_path_local + "/vpc-network-" + vpc_name + ".tfstate"), vpc_name, "nat-gateways")
+#   end
+# end
 
 def report_stateless_subnets(ec2, vpc_ids_with_names_from_state)
   vpc_ids_with_names_from_state.each do |vpc_id_with_name|

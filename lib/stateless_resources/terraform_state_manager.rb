@@ -14,13 +14,31 @@ module StatelessResources
     end
 
     def vpc_ids
-      local_statefiles.map do |file|
+      local_statefiles.map { |file|
         data = JSON.parse(File.read(file))
         data.dig("outputs", "vpc_id", "value")
-      end.compact
+      }.compact
+    end
+
+    def nat_gateway_ids
+      local_statefiles.inject([]) { |ids, file| ids << nat_gateway_ids_from_statefile(file) }
+        .flatten
+        .uniq
+        .reject(&:empty?)
+        .sort
     end
 
     private
+
+    def nat_gateway_ids_from_statefile(file)
+      JSON.parse(File.read(file))
+        .fetch("resources")
+        .find_all { |hash| hash["name"] = "private_nat_gateway" }
+        .map { |hash| hash["instances"] }
+        .flatten
+        .map { |hash| hash.dig("attributes", "nat_gateway_id") }
+        .compact
+    end
 
     def download_files
       keys = s3client.bucket("cloud-platform-terraform-state").objects(prefix: "cloud-platform-network/", delimiter: "").collect(&:key)
