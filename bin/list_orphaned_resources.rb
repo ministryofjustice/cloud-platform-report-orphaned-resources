@@ -20,6 +20,7 @@ terraform_state = StatelessResources::TerraformStateManager.new(
   dir: "state-files/cloud-platform-network"
 )
 
+unlisted_inet_gw = (aws_resources.internet_gateways - terraform_state.internet_gateways).sort
 unlisted_subnets = (aws_resources.subnets - terraform_state.subnets).sort
 unlisted_nat_gateways = (aws_resources.nat_gateway_ids - terraform_state.nat_gateway_ids).sort
 unlisted_vpcs = (aws_resources.vpc_ids - terraform_state.vpc_ids).sort
@@ -131,5 +132,16 @@ expected = [
  "rtb-0fe5899e710d58a40"
 ]
 binding.pry unless unlisted_route_tables == expected
+
+expected = [
+ "igw-022e0d29650551760",
+ "igw-02d7fa82ec45ce374",
+ "igw-04020481053da115d",
+ "igw-04d303c4c3b0df39c",
+ "igw-06eaa751377185276",
+ "igw-0e2ff07a1cc56e29e",
+ "igw-f8c8fd91"
+]
+binding.pry unless unlisted_inet_gw == expected
 
 puts "pass"

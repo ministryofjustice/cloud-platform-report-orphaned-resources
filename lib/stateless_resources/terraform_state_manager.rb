@@ -40,7 +40,21 @@ module StatelessResources
       clean_list(list)
     end
 
+    def internet_gateways
+      list = local_statefiles.inject([]) { |ids, file| ids << internet_gateways_from_statefile(file) }
+      clean_list(list)
+    end
+
     private
+
+    def internet_gateways_from_statefile(file)
+      JSON.parse(File.read(file))
+        .fetch("resources")
+        .find_all {|h| h["name"] == "public_internet_gateway" }
+        .map { |h| h["instances"] }
+        .flatten
+        .map {|h| h.dig("attributes", "gateway_id")}
+    end
 
     def route_tables_from_statefile(file)
       data = JSON.parse(File.read(file))

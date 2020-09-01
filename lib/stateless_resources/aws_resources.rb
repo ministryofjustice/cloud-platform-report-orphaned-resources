@@ -31,6 +31,13 @@ module StatelessResources
       clean_list(list)
     end
 
+    def internet_gateways
+      list = ec2client.describe_internet_gateways
+        .internet_gateways
+        .map(&:internet_gateway_id)
+      clean_list(list)
+    end
+
     private
 
     def route_tables_for_subnet(subnet_id)
