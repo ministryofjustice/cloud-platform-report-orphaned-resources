@@ -1,14 +1,6 @@
 #!/usr/bin/env ruby
 
-require "pry-byebug"
-require "bundler/setup"
-require "json"
-require "aws-sdk-ec2"
-require "aws-sdk-s3"
-require "slack-notifier"
-require "aws-sdk-autoscaling"
-require "aws-sdk-route53"
-require "find"
+require "./lib/stateless_resources"
 
 require "./modules/helper_methods.rb"
 require "./modules/data_from_aws.rb"
