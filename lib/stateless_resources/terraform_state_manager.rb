@@ -1,5 +1,5 @@
 module StatelessResources
-  class TerraformStateManager
+  class TerraformStateManager < Lister
     attr_reader :s3client, :bucket, :prefix, :dir
 
     def initialize(args)
@@ -30,7 +30,21 @@ module StatelessResources
       clean_list(list)
     end
 
+    def route_table_associations
+      list = local_statefiles.inject([]) { |ids, file| ids << route_table_associations_from_statefile(file) }
+      clean_list(list)
+    end
+
     private
+
+    def route_table_associations_from_statefile(file)
+      JSON.parse(File.read(file))
+        .fetch("resources")
+        .find_all { |res| res["type"] == "aws_route_table_association" }
+        .map { |res| res["instances"] }
+        .flatten
+        .map {|res| res.dig("attributes", "id") }
+    end
 
     def subnet_ids_from_statefile(file)
       data = JSON.parse(File.read(file))
@@ -58,15 +72,6 @@ module StatelessResources
         end
         outfile
       end
-    end
-
-    def clean_list(list)
-      list
-        .flatten
-        .uniq
-        .reject(&:nil?)
-        .reject(&:empty?)
-        .sort
     end
   end
 end

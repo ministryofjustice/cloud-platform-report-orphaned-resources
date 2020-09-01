@@ -23,6 +23,7 @@ terraform_state = StatelessResources::TerraformStateManager.new(
 unlisted_subnets = (aws_resources.subnets - terraform_state.subnets).sort
 unlisted_nat_gateways = (aws_resources.nat_gateway_ids - terraform_state.nat_gateway_ids).sort
 unlisted_vpcs = (aws_resources.vpc_ids - terraform_state.vpc_ids).sort
+unlisted_rtas = (aws_resources.route_table_associations - terraform_state.route_table_associations).sort
 
 ####################################
 
@@ -84,7 +85,30 @@ expected = [
   "subnet-0f9ae7697e56c1450",
   "subnet-4178f728",
   "subnet-a069a0da",
-  "subnet-cdf6e980"]
+  "subnet-cdf6e980"
+]
 binding.pry unless unlisted_subnets == expected
+
+expected = [
+  "rtbassoc-0097720a1264f8a98",
+  "rtbassoc-00ca09ae513b56f1a",
+  "rtbassoc-00cd2d137cdefa9a5",
+  "rtbassoc-039eea76df00bbd8a",
+  "rtbassoc-03b2065e14a5ea835",
+  "rtbassoc-03c2fc330608a777c",
+  "rtbassoc-0451cf552d0852c63",
+  "rtbassoc-052069a977058b6eb",
+  "rtbassoc-05fcc973f3a47b58c",
+  "rtbassoc-066dc12ddd69629ff",
+  "rtbassoc-06badd1b2780be1d6",
+  "rtbassoc-077abf78437f8f29b",
+  "rtbassoc-078b56dd0032af311",
+  "rtbassoc-09bd1026b2cb66bc1",
+  "rtbassoc-0b81bfbf66ce90a28",
+  "rtbassoc-0c82102fa5524cb4d",
+  "rtbassoc-0daa38684887f81f2",
+  "rtbassoc-0eab868ed337178a1"
+]
+binding.pry unless unlisted_rtas == expected
 
 puts "pass"

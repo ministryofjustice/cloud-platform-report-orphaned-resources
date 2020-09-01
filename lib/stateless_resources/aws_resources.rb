@@ -1,5 +1,5 @@
 module StatelessResources
-  class AwsResources
+  class AwsResources < Lister
     attr_reader :s3client, :ec2client
 
     def initialize(params)
@@ -12,22 +12,29 @@ module StatelessResources
     end
 
     def nat_gateway_ids
-      vpc_ids
-        .map { |id| nat_gateway_ids_for_vpc(id) }
-        .flatten
-        .uniq
-        .sort
+      list = vpc_ids.map { |id| nat_gateway_ids_for_vpc(id) }
+      clean_list(list)
     end
 
     def subnets
-      vpc_ids
-        .map { |id| subnet_ids(id) }
-        .flatten
-        .uniq
-        .sort
+      list = vpc_ids.map { |id| subnet_ids(id) }
+      clean_list(list)
+    end
+
+    def route_table_associations
+      list = subnets.map { |id| route_table_associations_for_subnet(id) }
+      clean_list(list)
     end
 
     private
+
+    def route_table_associations_for_subnet(subnet_id)
+      ec2client.describe_route_tables(filters: [{name: "association.subnet-id", values: [subnet_id]}])
+        .route_tables
+        .map(&:associations)
+        .flatten
+        .map { |hash| hash["route_table_association_id"] }
+    end
 
     def subnet_ids(vpc_id)
       ec2client.describe_subnets(filters: [{name: "vpc-id", values: [vpc_id]}])

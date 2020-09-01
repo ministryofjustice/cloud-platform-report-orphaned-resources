@@ -33,17 +33,17 @@ def route_tables_for_subnet(client, subnet_id)
   route_table_id
 end
 
-def route_tables_assoc_for_subnet(client, subnet_id)
-  filters = [{name: "association.subnet-id", values: [subnet_id]}]
-  route_table_association_id = ""
-  data = client.describe_route_tables(filters: filters)
-  data[:route_tables][0][:associations].each do |route|
-    route_table_association_id = (route[:route_table_association_id])
-    # A subnet can only be associated to one route table, so we can break as soon as we assign the first route table assoc (the rest will be duplicates)
-    break
-  end
-  route_table_association_id
-end
+# def route_tables_assoc_for_subnet(client, subnet_id)
+#   filters = [{name: "association.subnet-id", values: [subnet_id]}]
+#   route_table_association_id = ""
+#   data = client.describe_route_tables(filters: filters)
+#   data[:route_tables][0][:associations].each do |route|
+#     route_table_association_id = (route[:route_table_association_id])
+#     # A subnet can only be associated to one route table, so we can break as soon as we assign the first route table assoc (the rest will be duplicates)
+#     break
+#   end
+#   route_table_association_id
+# end
 
 def internet_gateway_ids_for_vpc(client)
   data = client.describe_internet_gateways
@@ -65,15 +65,15 @@ end
 #   nat_gateway["instances"].map { |ng| ng.dig("attributes", "nat_gateway_id") }.sort
 # end
 
-def subnet_ids_from_terraform_state(statefile)
-  str = File.read(statefile)
-  data = JSON.parse(str)
-  subnets_ids_public = data["outputs"]["external_subnets_ids"]["value"]
-  subnets_ids_pvt = data["outputs"]["internal_subnets_ids"]["value"]
-  subnets_ids = subnets_ids_public | subnets_ids_pvt
-  subnets_ids
-rescue => e
-end
+# def subnet_ids_from_terraform_state(statefile)
+#   str = File.read(statefile)
+#   data = JSON.parse(str)
+#   subnets_ids_public = data["outputs"]["external_subnets_ids"]["value"]
+#   subnets_ids_pvt = data["outputs"]["internal_subnets_ids"]["value"]
+#   subnets_ids = subnets_ids_public | subnets_ids_pvt
+#   subnets_ids
+# rescue => e
+# end
 
 def route_table_ids_from_terraform_state(statefile)
   str = File.read(statefile)
@@ -85,19 +85,19 @@ def route_table_ids_from_terraform_state(statefile)
 rescue => e
 end
 
-def route_table_associations_from_terraform_state(statefile)
-  route_table_association_pvt_list = []
-  route_table_association_pub_list = []
-  str = File.read(statefile)
-  data = JSON.parse(str)
-  list = data["resources"]
-  route_table_association_pvt = list.filter { |m| m["type"] == "aws_route_table_association" }[3] # The private route tbl assoc are in iteration 3
-  route_table_association_pub = list.filter { |m| m["type"] == "aws_route_table_association" }[4] # The private route tbl assoc are in iteration 4
-  route_table_association_pvt_list = route_table_association_pvt["instances"].map { |route_tbl_assoc| route_tbl_assoc.dig("attributes", "id") }.sort
-  route_table_association_pub_list = route_table_association_pub["instances"].map { |route_tbl_assoc| route_tbl_assoc.dig("attributes", "id") }.sort
-  route_table_association_pvt_list | route_table_association_pub_list # Add the public route tbl assoc (in iteration 2) to the private ones before returning
-rescue => e
-end
+# def route_table_associations_from_terraform_state(statefile)
+#   route_table_association_pvt_list = []
+#   route_table_association_pub_list = []
+#   str = File.read(statefile)
+#   data = JSON.parse(str)
+#   list = data["resources"]
+#   route_table_association_pvt = list.filter { |m| m["type"] == "aws_route_table_association" }[3] # The private route tbl assoc are in iteration 3
+#   route_table_association_pub = list.filter { |m| m["type"] == "aws_route_table_association" }[4] # The private route tbl assoc are in iteration 4
+#   route_table_association_pvt_list = route_table_association_pvt["instances"].map { |route_tbl_assoc| route_tbl_assoc.dig("attributes", "id") }.sort
+#   route_table_association_pub_list = route_table_association_pub["instances"].map { |route_tbl_assoc| route_tbl_assoc.dig("attributes", "id") }.sort
+#   route_table_association_pvt_list | route_table_association_pub_list # Add the public route tbl assoc (in iteration 2) to the private ones before returning
+# rescue => e
+# end
 
 def internet_gateway_ids_from_terraform_state(statefile)
   str = File.read(statefile)
@@ -138,14 +138,14 @@ end
 #   end
 # end
 
-def report_stateless_subnets(ec2, vpc_ids_with_names_from_state)
-  vpc_ids_with_names_from_state.each do |vpc_id_with_name|
-    each_vpc_id_with_name = vpc_id_with_name.split("|")
-    vpc_id = each_vpc_id_with_name[0]
-    vpc_name = each_vpc_id_with_name[1]
-    compare_and_report_data(subnets_ids_for_vpc(ec2, vpc_id), subnet_ids_from_terraform_state(@state_file_path_local + "/vpc-network-" + vpc_name + ".tfstate"), vpc_name, "subnets")
-  end
-end
+# def report_stateless_subnets(ec2, vpc_ids_with_names_from_state)
+#   vpc_ids_with_names_from_state.each do |vpc_id_with_name|
+#     each_vpc_id_with_name = vpc_id_with_name.split("|")
+#     vpc_id = each_vpc_id_with_name[0]
+#     vpc_name = each_vpc_id_with_name[1]
+#     compare_and_report_data(subnets_ids_for_vpc(ec2, vpc_id), subnet_ids_from_terraform_state(@state_file_path_local + "/vpc-network-" + vpc_name + ".tfstate"), vpc_name, "subnets")
+#   end
+# end
 
 def report_stateless_route_tables(ec2, vpc_ids_with_names_from_state)
   vpc_ids_with_names_from_state.each do |vpc_id_with_name|
@@ -164,20 +164,20 @@ def report_stateless_route_tables(ec2, vpc_ids_with_names_from_state)
 rescue => e
 end
 
-def report_stateless_route_tables_assoc(ec2, vpc_ids_with_names_from_state)
-  vpc_ids_with_names_from_state.each do |vpc_id_with_name|
-    each_vpc_id_with_name = vpc_id_with_name.split("|")
-    vpc_id = each_vpc_id_with_name[0]
-    vpc_name = each_vpc_id_with_name[1]
-    subnets_ids_for_vpc_arr = subnets_ids_for_vpc(ec2, vpc_id)
-    route_tables_ids_assoc_arr = []
-    subnets_ids_for_vpc_arr.each do |subnet_id|
-      route_tables_ids_assoc_arr.push(route_tables_assoc_for_subnet(ec2, subnet_id).strip)
-    end
-    compare_and_report_data(route_tables_ids_assoc_arr, route_table_associations_from_terraform_state(@state_file_path_local + "/vpc-network-" + vpc_name + ".tfstate"), vpc_name, "route-tables")
-  end
-rescue => e
-end
+# def report_stateless_route_tables_assoc(ec2, vpc_ids_with_names_from_state)
+#   vpc_ids_with_names_from_state.each do |vpc_id_with_name|
+#     each_vpc_id_with_name = vpc_id_with_name.split("|")
+#     vpc_id = each_vpc_id_with_name[0]
+#     vpc_name = each_vpc_id_with_name[1]
+#     subnets_ids_for_vpc_arr = subnets_ids_for_vpc(ec2, vpc_id)
+#     route_tables_ids_assoc_arr = []
+#     subnets_ids_for_vpc_arr.each do |subnet_id|
+#       route_tables_ids_assoc_arr.push(route_tables_assoc_for_subnet(ec2, subnet_id).strip)
+#     end
+#     compare_and_report_data(route_tables_ids_assoc_arr, route_table_associations_from_terraform_state(@state_file_path_local + "/vpc-network-" + vpc_name + ".tfstate"), vpc_name, "route-tables")
+#   end
+# rescue => e
+# end
 
 def compare_and_report_data(aws_data, state_data, vpc_name, resource)
   state_data.collect { |e| e.strip }
