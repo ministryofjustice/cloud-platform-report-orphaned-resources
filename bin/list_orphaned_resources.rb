@@ -20,7 +20,7 @@ terraform_state = StatelessResources::TerraformStateManager.new(
   dir: "state-files/cloud-platform-network"
 )
 
-unlisted_vpcs = aws_resources.vpc_ids - terraform_state.vpc_ids
+unlisted_vpcs = (aws_resources.vpc_ids - terraform_state.vpc_ids).sort
 
 ####################################
 
@@ -35,5 +35,5 @@ expected = [
   "vpc-0bab8ed9b758fe5ae",
   "vpc-0c4c69a47d9d1cde4",
 ]
-binding.pry unless unlisted_vpcs.sort == expected
+binding.pry unless unlisted_vpcs == expected
 puts "pass"
