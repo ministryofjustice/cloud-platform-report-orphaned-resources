@@ -19,7 +19,22 @@ module StatelessResources
         .sort
     end
 
+    def subnets
+      vpc_ids
+        .map { |id| subnet_ids(id) }
+        .flatten
+        .uniq
+        .sort
+    end
+
     private
+
+    def subnet_ids(vpc_id)
+      ec2client.describe_subnets(filters: [{name: "vpc-id", values: [vpc_id]}])
+        .subnets
+        .map(&:subnet_id)
+        .sort
+    end
 
     def nat_gateway_ids_for_vpc(vpc_id)
       ec2client.describe_nat_gateways(filter: [{name: "vpc-id", values: [vpc_id]}])

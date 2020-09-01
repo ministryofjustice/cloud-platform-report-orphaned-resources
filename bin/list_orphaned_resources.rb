@@ -20,6 +20,7 @@ terraform_state = StatelessResources::TerraformStateManager.new(
   dir: "state-files/cloud-platform-network"
 )
 
+unlisted_subnets = (aws_resources.subnets - terraform_state.subnets).sort
 unlisted_nat_gateways = (aws_resources.nat_gateway_ids - terraform_state.nat_gateway_ids).sort
 unlisted_vpcs = (aws_resources.vpc_ids - terraform_state.vpc_ids).sort
 
@@ -53,4 +54,37 @@ expected = [
   "vpc-0c4c69a47d9d1cde4",
 ]
 binding.pry unless unlisted_vpcs == expected
+
+expected = [
+  "subnet-00b69b12d4f09e071",
+  "subnet-0138864ff21b5366c",
+  "subnet-020b24a6ef7781907",
+  "subnet-037b76b614e2c1f1b",
+  "subnet-04847ca33eb45c59c",
+  "subnet-04c6bd06dde440689",
+  "subnet-057566078595c41af",
+  "subnet-05d07bbd206da8487",
+  "subnet-0679de94b1e070064",
+  "subnet-0702b6672f19c9455",
+  "subnet-0763be12e7637c6de",
+  "subnet-07e7075e4ada33083",
+  "subnet-0830b27266c3f9ba0",
+  "subnet-09655e4b0e4c2f24c",
+  "subnet-09da019b3486e69c2",
+  "subnet-0a806db0f701ce9ec",
+  "subnet-0c23108235d1060c8",
+  "subnet-0c4ae9dfc30cf7592",
+  "subnet-0c86152e56fcd5c55",
+  "subnet-0ca05b946be668f41",
+  "subnet-0ce2286bbef6c2da8",
+  "subnet-0ef4a35a676601e6b",
+  "subnet-0f1f08505f709a87e",
+  "subnet-0f52304b43a1c2b43",
+  "subnet-0f54fdcdfc525343a",
+  "subnet-0f9ae7697e56c1450",
+  "subnet-4178f728",
+  "subnet-a069a0da",
+  "subnet-cdf6e980"]
+binding.pry unless unlisted_subnets == expected
+
 puts "pass"

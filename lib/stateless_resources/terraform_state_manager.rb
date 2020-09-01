@@ -21,14 +21,21 @@ module StatelessResources
     end
 
     def nat_gateway_ids
-      local_statefiles.inject([]) { |ids, file| ids << nat_gateway_ids_from_statefile(file) }
-        .flatten
-        .uniq
-        .reject(&:empty?)
-        .sort
+      list = local_statefiles.inject([]) { |ids, file| ids << nat_gateway_ids_from_statefile(file) }
+      clean_list(list)
+    end
+
+    def subnets
+      list = local_statefiles.inject([]) { |ids, file| ids << subnet_ids_from_statefile(file) }
+      clean_list(list)
     end
 
     private
+
+    def subnet_ids_from_statefile(file)
+      data = JSON.parse(File.read(file))
+      data.dig("outputs", "external_subnets_ids", "value").to_a + data.dig("outputs", "internal_subnets_ids", "value").to_a
+    end
 
     def nat_gateway_ids_from_statefile(file)
       JSON.parse(File.read(file))
@@ -51,6 +58,15 @@ module StatelessResources
         end
         outfile
       end
+    end
+
+    def clean_list(list)
+      list
+        .flatten
+        .uniq
+        .reject(&:nil?)
+        .reject(&:empty?)
+        .sort
     end
   end
 end
