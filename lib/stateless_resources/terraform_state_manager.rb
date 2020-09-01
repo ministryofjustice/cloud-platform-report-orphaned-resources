@@ -9,6 +9,19 @@ module StatelessResources
       @dir = args.fetch(:dir)
     end
 
+    def local_statefiles
+      @files ||= download_files
+    end
+
+    def vpc_ids
+      local_statefiles.map do |file|
+        data = JSON.parse(File.read(file))
+        data.dig("outputs", "vpc_id", "value")
+      end.compact
+    end
+
+    private
+
     def download_files
       keys = s3client.bucket("cloud-platform-terraform-state").objects(prefix: "cloud-platform-network/", delimiter: "").collect(&:key)
 
