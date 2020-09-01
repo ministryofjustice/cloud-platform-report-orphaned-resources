@@ -21,18 +21,18 @@ def subnets_ids_for_vpc(client, vpc_id)
   data.subnets.map { |sn| sn.subnet_id }.sort
 end
 
-def route_tables_for_subnet(client, subnet_id)
-  filters = [{name: "association.subnet-id", values: [subnet_id]}]
-  route_table_id = ""
-  data = client.describe_route_tables(filters: filters)
-  data[:route_tables][0][:associations].each do |route|
-    route_table_id = (route[:route_table_id])
-    # A subnet can only be associated to one route table, so we can break as soon as we assign the first route table (the rest will be duplicates)
-    break
-  end
-  route_table_id
-end
-
+# def route_tables_for_subnet(client, subnet_id)
+#   filters = [{name: "association.subnet-id", values: [subnet_id]}]
+#   route_table_id = ""
+#   data = client.describe_route_tables(filters: filters)
+#   data[:route_tables][0][:associations].each do |route|
+#     route_table_id = (route[:route_table_id])
+#     # A subnet can only be associated to one route table, so we can break as soon as we assign the first route table (the rest will be duplicates)
+#     break
+#   end
+#   route_table_id
+# end
+#
 # def route_tables_assoc_for_subnet(client, subnet_id)
 #   filters = [{name: "association.subnet-id", values: [subnet_id]}]
 #   route_table_association_id = ""

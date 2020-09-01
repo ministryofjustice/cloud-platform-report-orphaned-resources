@@ -21,6 +21,11 @@ module StatelessResources
       clean_list(list)
     end
 
+    def route_tables
+      list = subnets.map { |id| route_tables_for_subnet(id) }
+      clean_list(list)
+    end
+
     def route_table_associations
       list = subnets.map { |id| route_table_associations_for_subnet(id) }
       clean_list(list)
@@ -28,12 +33,21 @@ module StatelessResources
 
     private
 
+    def route_tables_for_subnet(subnet_id)
+      route_table_association_objects(subnet_id)
+        .map(&:route_table_id)
+    end
+
     def route_table_associations_for_subnet(subnet_id)
+      route_table_association_objects(subnet_id)
+        .map { |hash| hash["route_table_association_id"] }
+    end
+
+    def route_table_association_objects(subnet_id)
       ec2client.describe_route_tables(filters: [{name: "association.subnet-id", values: [subnet_id]}])
         .route_tables
         .map(&:associations)
         .flatten
-        .map { |hash| hash["route_table_association_id"] }
     end
 
     def subnet_ids(vpc_id)

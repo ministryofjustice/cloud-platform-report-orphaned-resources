@@ -23,6 +23,7 @@ terraform_state = StatelessResources::TerraformStateManager.new(
 unlisted_subnets = (aws_resources.subnets - terraform_state.subnets).sort
 unlisted_nat_gateways = (aws_resources.nat_gateway_ids - terraform_state.nat_gateway_ids).sort
 unlisted_vpcs = (aws_resources.vpc_ids - terraform_state.vpc_ids).sort
+unlisted_route_tables = (aws_resources.route_tables - terraform_state.route_tables).sort
 unlisted_rtas = (aws_resources.route_table_associations - terraform_state.route_table_associations).sort
 
 ####################################
@@ -110,5 +111,25 @@ expected = [
   "rtbassoc-0eab868ed337178a1"
 ]
 binding.pry unless unlisted_rtas == expected
+
+expected = [
+ "rtb-00374784bd27cc56b",
+ "rtb-00e3dc64ab0d25567",
+ "rtb-038b98b5d0d73b37d",
+ "rtb-04a54b56190678b7b",
+ "rtb-04ea5e2f8b8773b01",
+ "rtb-06cb3e4795a7f6f86",
+ "rtb-071b8299bcb4f0553",
+ "rtb-084d2e141181d35a6",
+ "rtb-0a0da56644c5ab04f",
+ "rtb-0acc848870aeb3b4b",
+ "rtb-0b2acee7ebd76593f",
+ "rtb-0bca8784a0021601a",
+ "rtb-0c75ba3cceb487031",
+ "rtb-0c8309575ec182da2",
+ "rtb-0d2ee0e3c69a41fd4",
+ "rtb-0fe5899e710d58a40"
+]
+binding.pry unless unlisted_route_tables == expected
 
 puts "pass"

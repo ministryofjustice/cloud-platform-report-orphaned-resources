@@ -30,12 +30,22 @@ module StatelessResources
       clean_list(list)
     end
 
+    def route_tables
+      list = local_statefiles.inject([]) { |ids, file| ids << route_tables_from_statefile(file) }
+      clean_list(list)
+    end
+
     def route_table_associations
       list = local_statefiles.inject([]) { |ids, file| ids << route_table_associations_from_statefile(file) }
       clean_list(list)
     end
 
     private
+
+    def route_tables_from_statefile(file)
+      data = JSON.parse(File.read(file))
+      data.dig("outputs", "private_route_tables", "value").to_a + data.dig("outputs", "public_route_tables", "value").to_a
+    end
 
     def route_table_associations_from_statefile(file)
       JSON.parse(File.read(file))
