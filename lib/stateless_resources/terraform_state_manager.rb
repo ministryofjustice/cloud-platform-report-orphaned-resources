@@ -86,7 +86,10 @@ module StatelessResources
     end
 
     def download_files
-      keys = s3client.bucket("cloud-platform-terraform-state").objects(prefix: "cloud-platform-network/", delimiter: "").collect(&:key)
+      FileUtils.mkdir_p(dir) unless Dir.exists?(dir)
+      keys = s3client.bucket(bucket)
+        .objects(prefix: prefix, delimiter: "")
+        .collect(&:key)
 
       keys.map do |key|
         name = key.split("/")[1] # e.g. "cloud-platform-network/live-1/terraform.tfstate" -> "live-1"
