@@ -5,36 +5,7 @@
 
 require_relative "../lib/stateless_resources"
 
-s3 = Aws::S3::Resource.new(region: "eu-west-1", profile: ENV["AWS_PROFILE"])
-ec2 = Aws::EC2::Client.new(region: "eu-west-2", profile: ENV["AWS_PROFILE"])
-route53 = Aws::Route53::Client.new(region: "eu-west-2", profile: ENV["AWS_PROFILE"])
-
-aws_resources = StatelessResources::AwsResources.new(
-  s3client: s3,
-  ec2client: ec2,
-  route53client: route53,
-)
-
-network_tf = StatelessResources::TerraformStateManager.new(
-  s3client: s3,
-  bucket: "cloud-platform-terraform-state",
-  prefix: "cloud-platform-network/",
-  dir: "state-files/cloud-platform-network"
-)
-
-main_tf = StatelessResources::TerraformStateManager.new(
-  s3client: s3,
-  bucket: "cloud-platform-terraform-state",
-  prefix: "cloud-platform/",
-  dir: "state-files/cloud-platform"
-)
-
-unlisted_inet_gw = (aws_resources.internet_gateways - network_tf.internet_gateways).sort
-unlisted_subnets = (aws_resources.subnets - network_tf.subnets).sort
-unlisted_nat_gateways = (aws_resources.nat_gateway_ids - network_tf.nat_gateway_ids).sort
-unlisted_vpcs = (aws_resources.vpc_ids - network_tf.vpc_ids).sort
-unlisted_route_tables = (aws_resources.route_tables - network_tf.route_tables).sort
-unlisted_rtas = (aws_resources.route_table_associations - network_tf.route_table_associations).sort
+report = StatelessResources::Reporter.new.run
 
 ####################################
 
@@ -54,7 +25,8 @@ expected = [
   "nat-0f1509bbff438b942",
   "nat-0f6e554694378158b"
 ]
-binding.pry unless unlisted_nat_gateways == expected
+binding.pry unless report[:nat_gateways] == expected
+
 
 expected = [
   "vpc-0267b8f3c5fae7d13",
@@ -65,7 +37,7 @@ expected = [
   "vpc-0bab8ed9b758fe5ae",
   "vpc-0c4c69a47d9d1cde4",
 ]
-binding.pry unless unlisted_vpcs == expected
+binding.pry unless report[:vpcs] == expected
 
 expected = [
   "subnet-00b69b12d4f09e071",
@@ -98,7 +70,7 @@ expected = [
   "subnet-a069a0da",
   "subnet-cdf6e980"
 ]
-binding.pry unless unlisted_subnets == expected
+binding.pry unless report[:subnets] == expected
 
 expected = [
   "rtbassoc-0097720a1264f8a98",
@@ -120,7 +92,7 @@ expected = [
   "rtbassoc-0daa38684887f81f2",
   "rtbassoc-0eab868ed337178a1"
 ]
-binding.pry unless unlisted_rtas == expected
+binding.pry unless report[:route_table_associations] == expected
 
 expected = [
  "rtb-00374784bd27cc56b",
@@ -140,7 +112,7 @@ expected = [
  "rtb-0d2ee0e3c69a41fd4",
  "rtb-0fe5899e710d58a40"
 ]
-binding.pry unless unlisted_route_tables == expected
+binding.pry unless report[:route_tables] == expected
 
 expected = [
  "igw-022e0d29650551760",
@@ -151,6 +123,6 @@ expected = [
  "igw-0e2ff07a1cc56e29e",
  "igw-f8c8fd91"
 ]
-binding.pry unless unlisted_inet_gw == expected
+binding.pry unless report[:internet_gateways] == expected
 
 puts "pass"
