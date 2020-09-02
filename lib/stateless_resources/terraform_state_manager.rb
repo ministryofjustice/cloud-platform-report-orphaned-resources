@@ -45,6 +45,11 @@ module StatelessResources
       clean_list(list)
     end
 
+    def hosted_zones
+      list = local_statefiles.inject([]) { |ids, file| ids << hosted_zones_from_statefile(file) }
+      clean_list(list)
+    end
+
     private
 
     def internet_gateways_from_statefile(file)
@@ -83,6 +88,15 @@ module StatelessResources
         .flatten
         .map { |hash| hash.dig("attributes", "nat_gateway_id") }
         .compact
+    end
+
+    def hosted_zones_from_statefile(file)
+      data = JSON.parse(File.read(file))
+      data["resources"].to_a
+        .find_all { |res| res["type"] == "aws_route53_zone" }
+        .map { |zone| zone["instances"] }
+        .flatten
+        .map {|inst| inst.dig("attributes", "name")}
     end
 
     def download_files

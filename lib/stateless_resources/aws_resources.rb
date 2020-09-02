@@ -1,10 +1,11 @@
 module StatelessResources
   class AwsResources < Lister
-    attr_reader :s3client, :ec2client
+    attr_reader :s3client, :ec2client, :route53client
 
     def initialize(params)
       @s3client = params.fetch(:s3client)
       @ec2client = params.fetch(:ec2client)
+      @route53client = params.fetch(:route53client)
     end
 
     def vpc_ids
@@ -35,6 +36,12 @@ module StatelessResources
       list = ec2client.describe_internet_gateways
         .internet_gateways
         .map(&:internet_gateway_id)
+      clean_list(list)
+    end
+
+    # This includes all hosted zones belonging to namespaces in live-1
+    def hosted_zones
+      list = route53client.list_hosted_zones .hosted_zones.map(&:name)
       clean_list(list)
     end
 
