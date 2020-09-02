@@ -1,4 +1,4 @@
-module StatelessResources
+module OrphanedResources
   class AwsResources < Lister
     attr_reader :s3client, :ec2client, :route53client
 

@@ -1,24 +1,24 @@
-module StatelessResources
+module OrphanedResources
   class Reporter
     def run
       s3 = Aws::S3::Resource.new(region: "eu-west-1", profile: ENV["AWS_PROFILE"])
       ec2 = Aws::EC2::Client.new(region: "eu-west-2", profile: ENV["AWS_PROFILE"])
       route53 = Aws::Route53::Client.new(region: "eu-west-2", profile: ENV["AWS_PROFILE"])
 
-      @aws_resources = StatelessResources::AwsResources.new(
+      @aws_resources = OrphanedResources::AwsResources.new(
         s3client: s3,
         ec2client: ec2,
         route53client: route53,
       )
 
-      @network_tf = StatelessResources::TerraformStateManager.new(
+      @network_tf = OrphanedResources::TerraformStateManager.new(
         s3client: s3,
         bucket: "cloud-platform-terraform-state",
         prefix: "cloud-platform-network/",
         dir: "state-files/cloud-platform-network"
       )
 
-      # @main_tf = StatelessResources::TerraformStateManager.new(
+      # @main_tf = OrphanedResources::TerraformStateManager.new(
       #   s3client: s3,
       #   bucket: "cloud-platform-terraform-state",
       #   prefix: "cloud-platform/",

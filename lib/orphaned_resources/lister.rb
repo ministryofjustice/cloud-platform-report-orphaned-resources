@@ -1,4 +1,4 @@
-module StatelessResources
+module OrphanedResources
   class Lister
 
     private

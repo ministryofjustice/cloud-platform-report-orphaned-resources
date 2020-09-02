@@ -1,4 +1,4 @@
-module StatelessResources
+module OrphanedResources
   class TerraformStateManager < Lister
     attr_reader :s3client, :bucket, :prefix, :dir
 
