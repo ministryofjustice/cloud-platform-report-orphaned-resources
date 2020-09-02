@@ -13,19 +13,19 @@ aws_resources = StatelessResources::AwsResources.new(
   ec2client: ec2,
 )
 
-terraform_state = StatelessResources::TerraformStateManager.new(
+network_tf = StatelessResources::TerraformStateManager.new(
   s3client: s3,
   bucket: "cloud-platform-terraform-state",
   prefix: "cloud-platform-network/",
   dir: "state-files/cloud-platform-network"
 )
 
-unlisted_inet_gw = (aws_resources.internet_gateways - terraform_state.internet_gateways).sort
-unlisted_subnets = (aws_resources.subnets - terraform_state.subnets).sort
-unlisted_nat_gateways = (aws_resources.nat_gateway_ids - terraform_state.nat_gateway_ids).sort
-unlisted_vpcs = (aws_resources.vpc_ids - terraform_state.vpc_ids).sort
-unlisted_route_tables = (aws_resources.route_tables - terraform_state.route_tables).sort
-unlisted_rtas = (aws_resources.route_table_associations - terraform_state.route_table_associations).sort
+unlisted_inet_gw = (aws_resources.internet_gateways - network_tf.internet_gateways).sort
+unlisted_subnets = (aws_resources.subnets - network_tf.subnets).sort
+unlisted_nat_gateways = (aws_resources.nat_gateway_ids - network_tf.nat_gateway_ids).sort
+unlisted_vpcs = (aws_resources.vpc_ids - network_tf.vpc_ids).sort
+unlisted_route_tables = (aws_resources.route_tables - network_tf.route_tables).sort
+unlisted_rtas = (aws_resources.route_table_associations - network_tf.route_table_associations).sort
 
 ####################################
 
