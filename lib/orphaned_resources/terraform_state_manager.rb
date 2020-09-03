@@ -50,6 +50,11 @@ module OrphanedResources
       clean_list(list)
     end
 
+    def security_groups
+      list = local_statefiles.inject([]) { |ids, file| ids << security_groups_from_statefile(file) }
+      clean_list(list)
+    end
+
     private
 
     def internet_gateways_from_statefile(file)
@@ -93,6 +98,14 @@ module OrphanedResources
         .map { |zone| zone["instances"] }
         .flatten
         .map {|inst| inst.dig("attributes", "name")}
+    end
+
+    def security_groups_from_statefile(file)
+      json_resources(file)
+        .find_all { |res| res["type"] == "aws_security_group" }
+        .map { |res| res["instances"] }
+        .flatten
+        .map {|inst| inst.dig("attributes", "id") }
     end
 
     def download_files

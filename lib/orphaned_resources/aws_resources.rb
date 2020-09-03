@@ -48,6 +48,13 @@ module OrphanedResources
       clean_list(list)
     end
 
+    def security_groups
+      list = ec2client.describe_security_groups
+        .security_groups
+        .map(&:group_id)
+      clean_list(list)
+    end
+
     private
 
     def route_tables_for_subnet(subnet_id)

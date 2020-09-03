@@ -29,12 +29,17 @@ module OrphanedResources
         subnets: subnets,
         nat_gateways: nat_gateways,
         vpcs: vpcs,
+        security_groups: security_groups
         route_tables: route_tables,
         route_table_associations: route_table_associations,
       }
     end
 
     private
+
+    def security_groups
+      (@aws.security_groups - @terraform.security_groups).sort
+    end
 
     def hosted_zones
       (@aws.hosted_zones - @terraform.hosted_zones).sort
