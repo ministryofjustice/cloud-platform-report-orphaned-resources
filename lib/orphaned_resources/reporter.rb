@@ -5,13 +5,13 @@ module OrphanedResources
       ec2 = Aws::EC2::Client.new(region: "eu-west-2", profile: ENV["AWS_PROFILE"])
       route53 = Aws::Route53::Client.new(region: "eu-west-2", profile: ENV["AWS_PROFILE"])
 
-      @aws_resources = OrphanedResources::AwsResources.new(
+      @aws = OrphanedResources::AwsResources.new(
         s3client: s3,
         ec2client: ec2,
         route53client: route53,
       )
 
-      @network_tf = OrphanedResources::TerraformStateManager.new(
+      @terraform = OrphanedResources::TerraformStateManager.new(
         s3client: s3,
         bucket: "cloud-platform-terraform-state",
         prefixes: ["cloud-platform-network"],
@@ -38,27 +38,27 @@ module OrphanedResources
     private
 
     def internet_gateways
-      (@aws_resources.internet_gateways - @network_tf.internet_gateways).sort
+      (@aws.internet_gateways - @terraform.internet_gateways).sort
     end
 
     def subnets
-      (@aws_resources.subnets - @network_tf.subnets).sort
+      (@aws.subnets - @terraform.subnets).sort
     end
 
     def nat_gateways
-      (@aws_resources.nat_gateway_ids - @network_tf.nat_gateway_ids).sort
+      (@aws.nat_gateway_ids - @terraform.nat_gateway_ids).sort
     end
 
     def vpcs
-      (@aws_resources.vpc_ids - @network_tf.vpc_ids).sort
+      (@aws.vpc_ids - @terraform.vpc_ids).sort
     end
 
     def route_tables
-      (@aws_resources.route_tables - @network_tf.route_tables).sort
+      (@aws.route_tables - @terraform.route_tables).sort
     end
 
     def route_table_associations
-      (@aws_resources.route_table_associations - @network_tf.route_table_associations).sort
+      (@aws.route_table_associations - @terraform.route_table_associations).sort
     end
   end
 end
