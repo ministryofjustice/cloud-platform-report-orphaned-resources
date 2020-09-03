@@ -1,4 +1,1 @@
-.terraform
 state-files/*
-output-files/*
-Gemfile.lock
