@@ -1,19 +1,19 @@
 # Orphaned AWS Reporter
 
-## Overview
+Output a JSON document, suitable for posting to [How Out Of Date Are We],
+listing all the AWS resources which exist but are not mentioned in any of the
+`terraform.tfstate` files in the Cloud Platform terraform state S3 bucket.
 
-This respository contains Ruby code, which will report on orphaned resources in
-AWS. i.e. AWS resources which are not listed in any relevant terraform state
-files.
+## Running
 
-Currently this is scoped to look for AWS resources leftover from test clusters
-which failed to be cleanly deleted, but it should be easy to extend it to
-include resources which should belong to terraform states in the
-cloud-platform-environments repository.
+See the `makefile` for an example of how to use the docker image this project
+creates.
 
-## Requirements
+## Updating
 
-1. Ensure your AWS credentials are set to the environment from which you want
-   to execute the scripts. The AWS profile should be set under the profile name
-   `moj-cp` e.g `export AWS_PROFILE=moj-cp`
-2. Ruby >= 2.7.1
+This project contains a github action which pushes a new, tagged image to
+Docker Hub whenever a new project release is created.
+
+To update the docker image, merge your changes and then create a new release.
+
+[How Out Of Date Are We]: https://github.com/ministryofjustice/cloud-platform-how-out-of-date-are-we
