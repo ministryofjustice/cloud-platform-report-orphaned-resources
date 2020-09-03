@@ -41,7 +41,10 @@ module OrphanedResources
 
     # This includes all hosted zones belonging to namespaces in live-1
     def hosted_zones
-      list = route53client.list_hosted_zones .hosted_zones.map(&:name)
+      list = route53client
+        .list_hosted_zones
+        .hosted_zones.map(&:name)
+        .map { |name| name.sub(/\.$/, "") } # trim trailing '.'
       clean_list(list)
     end
 
