@@ -13,14 +13,14 @@ module OrphanedResources
       @files ||= download_files
     end
 
-    def vpc_ids
+    def vpcs
       local_statefiles.map { |file|
         data = parse_json(file)
         data.dig("outputs", "vpc_id", "value")
       }.compact
     end
 
-    def nat_gateway_ids
+    def nat_gateways
       list = local_statefiles.inject([]) { |ids, file| ids << nat_gateway_ids_from_statefile(file) }
       clean_list(list)
     end

@@ -8,12 +8,12 @@ module OrphanedResources
       @route53client = params.fetch(:route53client)
     end
 
-    def vpc_ids
+    def vpcs
       @_vpc_ids ||= ec2client.describe_vpcs.vpcs.map { |vpc| vpc.vpc_id }.sort
     end
 
-    def nat_gateway_ids
-      list = vpc_ids.map { |id| nat_gateway_ids_for_vpc(id) }
+    def nat_gateways
+      list = vpcs.map { |id| nat_gateway_ids_for_vpc(id) }
       clean_list(list)
     end
 

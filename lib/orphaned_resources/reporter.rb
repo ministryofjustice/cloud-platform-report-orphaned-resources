@@ -24,49 +24,21 @@ module OrphanedResources
       )
 
       {
-        hosted_zones: hosted_zones,
-        internet_gateways: internet_gateways,
-        subnets: subnets,
-        nat_gateways: nat_gateways,
-        vpcs: vpcs,
-        security_groups: security_groups
-        route_tables: route_tables,
-        route_table_associations: route_table_associations,
+        hosted_zones: compare(:hosted_zones),
+        internet_gateways: compare(:internet_gateways),
+        subnets: compare(:subnets),
+        nat_gateways: compare(:nat_gateways),
+        vpcs: compare(:vpcs),
+        security_groups: compare(:security_groups),
+        route_tables: compare(:route_tables),
+        route_table_associations: compare(:route_table_associations),
       }
     end
 
     private
 
-    def security_groups
-      (@aws.security_groups - @terraform.security_groups).sort
-    end
-
-    def hosted_zones
-      (@aws.hosted_zones - @terraform.hosted_zones).sort
-    end
-
-    def internet_gateways
-      (@aws.internet_gateways - @terraform.internet_gateways).sort
-    end
-
-    def subnets
-      (@aws.subnets - @terraform.subnets).sort
-    end
-
-    def nat_gateways
-      (@aws.nat_gateway_ids - @terraform.nat_gateway_ids).sort
-    end
-
-    def vpcs
-      (@aws.vpc_ids - @terraform.vpc_ids).sort
-    end
-
-    def route_tables
-      (@aws.route_tables - @terraform.route_tables).sort
-    end
-
-    def route_table_associations
-      (@aws.route_table_associations - @terraform.route_table_associations).sort
+    def compare(method)
+      (@aws.send(method) - @terraform.send(method)).sort
     end
   end
 end
