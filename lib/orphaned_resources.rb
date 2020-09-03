@@ -1,4 +1,3 @@
-require "pry-byebug"
 require "bundler/setup"
 require "json"
 require "aws-sdk-ec2"
