@@ -121,9 +121,6 @@ module OrphanedResources
       FileUtils.mkdir_p(d) unless Dir.exists?(d)
       s3client.bucket(bucket).object(key).get(response_target: outfile) unless FileTest.exists?(outfile)
       outfile
-    rescue
-      binding.pry
-      puts "whatever"
     end
 
     def json_resources(file)
