@@ -1,12 +1,12 @@
 module OrphanedResources
   class TerraformStateManager < Lister
-    attr_reader :s3client, :bucket, :prefix, :dir
+    attr_reader :s3client, :bucket, :prefixes, :cache_dir
 
     def initialize(args)
       @s3client = args.fetch(:s3client)
       @bucket = args.fetch(:bucket)
-      @prefix = args.fetch(:prefix)
-      @dir = args.fetch(:dir)
+      @prefixes = args.fetch(:prefixes)
+      @cache_dir = args.fetch(:cache_dir)
     end
 
     def local_statefiles
@@ -100,19 +100,26 @@ module OrphanedResources
     end
 
     def download_files
-      FileUtils.mkdir_p(dir) unless Dir.exists?(dir)
-      keys = s3client.bucket(bucket)
-        .objects(prefix: prefix, delimiter: "")
-        .collect(&:key)
+      prefixes.map { |prefix| download_files_for_prefix(prefix) }.flatten
+    end
 
-      keys.map do |key|
-        name = key.split("/")[1] # e.g. "cloud-platform-network/live-1/terraform.tfstate" -> "live-1"
-        outfile = "#{dir}/#{name}.tfstate"
-        unless FileTest.exists?(outfile)
-          s3client.bucket(bucket).object(key).get(response_target: outfile)
-        end
-        outfile
+    def download_files_for_prefix(prefix)
+      dir = File.join(cache_dir, prefix)
+      FileUtils.mkdir_p(dir) unless Dir.exists?(dir)
+
+      keys = s3client.bucket(bucket)
+        .objects(prefix: "#{prefix}/", delimiter: "")
+        .collect(&:key)
+      keys.map { |key| download_file(key, dir) }
+    end
+
+    def download_file(key, dir)
+      name = key.split("/")[1] # e.g. "cloud-platform-network/live-1/terraform.tfstate" -> "live-1"
+      outfile = "#{dir}/#{name}.tfstate"
+      unless FileTest.exists?(outfile)
+        s3client.bucket(bucket).object(key).get(response_target: outfile)
       end
+      outfile
     end
   end
 end

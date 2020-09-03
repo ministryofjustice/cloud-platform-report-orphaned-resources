@@ -14,15 +14,15 @@ module OrphanedResources
       @network_tf = OrphanedResources::TerraformStateManager.new(
         s3client: s3,
         bucket: "cloud-platform-terraform-state",
-        prefix: "cloud-platform-network/",
-        dir: "state-files/cloud-platform-network"
+        prefixes: ["cloud-platform-network"],
+        cache_dir: "state-files"
       )
 
       # @main_tf = OrphanedResources::TerraformStateManager.new(
       #   s3client: s3,
       #   bucket: "cloud-platform-terraform-state",
-      #   prefix: "cloud-platform/",
-      #   dir: "state-files/cloud-platform"
+      #   prefixes: ["cloud-platform"],
+      #   cache_dir: "state-files"
       # )
 
       {
