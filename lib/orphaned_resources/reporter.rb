@@ -24,6 +24,7 @@ module OrphanedResources
       )
 
       {
+        hosted_zones: hosted_zones,
         internet_gateways: internet_gateways,
         subnets: subnets,
         nat_gateways: nat_gateways,
@@ -34,6 +35,10 @@ module OrphanedResources
     end
 
     private
+
+    def hosted_zones
+      (@aws.hosted_zones - @terraform.hosted_zones).sort
+    end
 
     def internet_gateways
       (@aws.internet_gateways - @terraform.internet_gateways).sort
