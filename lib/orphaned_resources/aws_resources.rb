@@ -18,8 +18,10 @@ module OrphanedResources
     end
 
     def subnets
-      list = vpc_ids.map { |id| subnet_ids(id) }
-      clean_list(list)
+      @_subnet_ids ||= begin
+                      list = vpcs.map { |id| subnet_ids(id) }
+                      clean_list(list)
+                    end
     end
 
     def route_tables
