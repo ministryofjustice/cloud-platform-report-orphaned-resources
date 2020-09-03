@@ -1,11 +1,10 @@
 module OrphanedResources
   class TerraformStateManager < Lister
-    attr_reader :s3client, :bucket, :prefixes, :cache_dir
+    attr_reader :s3client, :bucket, :cache_dir
 
     def initialize(args)
       @s3client = args.fetch(:s3client)
       @bucket = args.fetch(:bucket)
-      @prefixes = args.fetch(:prefixes)
       @cache_dir = args.fetch(:cache_dir)
     end
 
@@ -109,12 +108,8 @@ module OrphanedResources
     end
 
     def download_files
-      prefixes.map { |prefix| download_files_for_prefix(prefix) }.flatten
-    end
-
-    def download_files_for_prefix(prefix)
       s3client.bucket(bucket)
-        .objects(prefix: "#{prefix}/", delimiter: "")
+        .objects
         .collect(&:key)
         .find_all { |key| key =~ /terraform.tfstate$/ }
         .map { |key| download_file(key) }
