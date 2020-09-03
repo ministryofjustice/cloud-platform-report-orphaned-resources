@@ -100,22 +100,22 @@ module OrphanedResources
     end
 
     def download_files_for_prefix(prefix)
-      dir = File.join(cache_dir, prefix)
-      FileUtils.mkdir_p(dir) unless Dir.exists?(dir)
-
-      keys = s3client.bucket(bucket)
+      s3client.bucket(bucket)
         .objects(prefix: "#{prefix}/", delimiter: "")
         .collect(&:key)
-      keys.map { |key| download_file(key, dir) }
+        .find_all { |key| key =~ /terraform.tfstate$/ }
+        .map { |key| download_file(key) }
     end
 
-    def download_file(key, dir)
-      name = key.split("/")[1] # e.g. "cloud-platform-network/live-1/terraform.tfstate" -> "live-1"
-      outfile = "#{dir}/#{name}.tfstate"
-      unless FileTest.exists?(outfile)
-        s3client.bucket(bucket).object(key).get(response_target: outfile)
-      end
+    def download_file(key)
+      outfile = File.join(cache_dir, key)
+      d = File.dirname(outfile)
+      FileUtils.mkdir_p(d) unless Dir.exists?(d)
+      s3client.bucket(bucket).object(key).get(response_target: outfile) unless FileTest.exists?(outfile)
       outfile
+    rescue
+      binding.pry
+      puts "whatever"
     end
 
     def json_resources(file)
