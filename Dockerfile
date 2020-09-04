@@ -1,7 +1,8 @@
 FROM ruby:2.7-alpine
 
 RUN apk --update add --virtual build_deps \
-    build-base ruby-dev libc-dev linux-headers
+    build-base ruby-dev libc-dev linux-headers \
+    curl
 
 RUN addgroup -g 1000 -S appgroup && \
     adduser -u 1000 -S appuser -G appgroup
@@ -21,4 +22,4 @@ RUN chown 1000:1000 state-files
 
 USER 1000
 
-CMD ["ruby", "./bin/list_orphaned_resources.rb"]
+CMD ["/bin/sh", "./bin/post-data-to-hoodaw.sh"]
