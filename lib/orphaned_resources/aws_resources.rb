@@ -9,35 +9,37 @@ module OrphanedResources
     end
 
     def vpcs
-      @_vpc_ids ||= ec2client.describe_vpcs.vpcs.map { |vpc| vpc.vpc_id }.sort
+      @_vpc_ids ||= ec2client.describe_vpcs.vpcs.map { |vpc|
+        ResourceTuple.new(id: vpc.vpc_id).add_cluster_tag(vpc)
+      }.sort
     end
 
     def nat_gateways
-      list = vpcs.map { |id| nat_gateway_ids_for_vpc(id) }
+      list = vpcs.map { |vpc| nat_gateway_ids_for_vpc(vpc.id) }
       clean_list(list)
     end
 
     def subnets
       @_subnet_ids ||= begin
-                      list = vpcs.map { |id| subnet_ids(id) }
+                      list = vpcs.map { |vpc| subnet_ids(vpc.id) }
                       clean_list(list)
                     end
     end
 
     def route_tables
-      list = subnets.map { |id| route_tables_for_subnet(id) }
+      list = subnets.map { |sn| route_tables_for_subnet(sn.id) }
       clean_list(list)
     end
 
     def route_table_associations
-      list = subnets.map { |id| route_table_associations_for_subnet(id) }
+      list = subnets.map { |sn| route_table_associations_for_subnet(sn.id) }
       clean_list(list)
     end
 
     def internet_gateways
       list = ec2client.describe_internet_gateways
         .internet_gateways
-        .map(&:internet_gateway_id)
+        .map {|igw| ResourceTuple.new(id: igw.internet_gateway_id).add_cluster_tag(igw) }
       clean_list(list)
     end
 
@@ -47,26 +49,26 @@ module OrphanedResources
         .list_hosted_zones
         .hosted_zones.map(&:name)
         .map { |name| name.sub(/\.$/, "") } # trim trailing '.'
-      clean_list(list)
+      clean_list(list).map { |name| ResourceTuple.new(id: name) }
     end
 
     def security_groups
       list = ec2client.describe_security_groups
         .security_groups
         .map(&:group_id)
-      clean_list(list)
+      clean_list(list).map { |id| ResourceTuple.new(id: id) }
     end
 
     private
 
     def route_tables_for_subnet(subnet_id)
       route_table_association_objects(subnet_id)
-        .map(&:route_table_id)
+        .map {|rt| ResourceTuple.new(id: rt.route_table_id) }
     end
 
     def route_table_associations_for_subnet(subnet_id)
       route_table_association_objects(subnet_id)
-        .map { |hash| hash["route_table_association_id"] }
+        .map {|rta| ResourceTuple.new(id: rta.route_table_association_id) }
     end
 
     def route_table_association_objects(subnet_id)
@@ -79,14 +81,14 @@ module OrphanedResources
     def subnet_ids(vpc_id)
       ec2client.describe_subnets(filters: [{name: "vpc-id", values: [vpc_id]}])
         .subnets
-        .map(&:subnet_id)
+        .map {|sn| ResourceTuple.new(id: sn.subnet_id).add_cluster_tag(sn) }
         .sort
     end
 
     def nat_gateway_ids_for_vpc(vpc_id)
       ec2client.describe_nat_gateways(filter: [{name: "vpc-id", values: [vpc_id]}])
         .nat_gateways
-        .map(&:nat_gateway_id)
+        .map {|ngw| ResourceTuple.new(id: ngw.nat_gateway_id).add_cluster_tag(ngw) }
     end
   end
 end

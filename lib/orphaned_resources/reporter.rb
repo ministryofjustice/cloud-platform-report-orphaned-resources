@@ -18,10 +18,10 @@ module OrphanedResources
       )
 
       {
+        nat_gateways: compare(:nat_gateways),
         hosted_zones: compare(:hosted_zones),
         internet_gateways: compare(:internet_gateways),
         subnets: compare(:subnets),
-        nat_gateways: compare(:nat_gateways),
         vpcs: compare(:vpcs),
         security_groups: compare(:security_groups),
         route_tables: compare(:route_tables),
@@ -32,7 +32,10 @@ module OrphanedResources
     private
 
     def compare(method)
-      (@aws.send(method) - @terraform.send(method)).sort
+      ResourceTuple.subtract_lists(
+        @aws.send(method),
+        @terraform.send(method)
+      ).sort
     end
   end
 end

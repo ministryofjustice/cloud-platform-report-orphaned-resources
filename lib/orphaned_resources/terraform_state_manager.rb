@@ -13,45 +13,46 @@ module OrphanedResources
     end
 
     def vpcs
-      local_statefiles.map { |file|
+      list = local_statefiles.map { |file|
         data = parse_json(file)
         data.dig("outputs", "vpc_id", "value")
-      }.compact
+      }
+      clean_list(list).map { |id| ResourceTuple.new(id: id) }
     end
 
     def nat_gateways
       list = local_statefiles.inject([]) { |ids, file| ids << nat_gateway_ids_from_statefile(file) }
-      clean_list(list)
+      clean_list(list).map { |id| ResourceTuple.new(id: id) }
     end
 
     def subnets
       list = local_statefiles.inject([]) { |ids, file| ids << subnet_ids_from_statefile(file) }
-      clean_list(list)
+      clean_list(list).map { |id| ResourceTuple.new(id: id) }
     end
 
     def route_tables
       list = local_statefiles.inject([]) { |ids, file| ids << route_tables_from_statefile(file) }
-      clean_list(list)
+      clean_list(list).map { |id| ResourceTuple.new(id: id) }
     end
 
     def route_table_associations
       list = local_statefiles.inject([]) { |ids, file| ids << route_table_associations_from_statefile(file) }
-      clean_list(list)
+      clean_list(list).map { |id| ResourceTuple.new(id: id) }
     end
 
     def internet_gateways
       list = local_statefiles.inject([]) { |ids, file| ids << internet_gateways_from_statefile(file) }
-      clean_list(list)
+      clean_list(list).map { |id| ResourceTuple.new(id: id) }
     end
 
     def hosted_zones
       list = local_statefiles.inject([]) { |ids, file| ids << hosted_zones_from_statefile(file) }
-      clean_list(list)
+      clean_list(list).map { |id| ResourceTuple.new(id: id) }
     end
 
     def security_groups
       list = local_statefiles.inject([]) { |ids, file| ids << security_groups_from_statefile(file) }
-      clean_list(list)
+      clean_list(list).map { |id| ResourceTuple.new(id: id) }
     end
 
     private
