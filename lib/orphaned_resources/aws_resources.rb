@@ -47,7 +47,7 @@ module OrphanedResources
         .list_hosted_zones
         .hosted_zones.map(&:name)
         .map { |name| name.sub(/\.$/, "") } # trim trailing '.'
-      clean_list(list)
+      clean_list(list).map { |name| ResourceTuple.new(id: name) }
     end
 
     def security_groups

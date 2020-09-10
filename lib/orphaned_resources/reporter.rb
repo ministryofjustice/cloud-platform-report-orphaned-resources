@@ -19,7 +19,7 @@ module OrphanedResources
 
       {
         nat_gateways: compare2(:nat_gateways),
-        hosted_zones: compare(:hosted_zones),
+        hosted_zones: compare2(:hosted_zones),
         internet_gateways: compare(:internet_gateways),
         subnets: compare(:subnets),
         vpcs: compare(:vpcs),

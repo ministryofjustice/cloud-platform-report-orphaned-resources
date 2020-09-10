@@ -46,7 +46,7 @@ module OrphanedResources
 
     def hosted_zones
       list = local_statefiles.inject([]) { |ids, file| ids << hosted_zones_from_statefile(file) }
-      clean_list(list)
+      clean_list(list).map { |name| ResourceTuple.new(id: name) }
     end
 
     def security_groups
