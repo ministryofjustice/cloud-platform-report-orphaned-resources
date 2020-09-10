@@ -25,7 +25,7 @@ module OrphanedResources
         vpcs: compare2(:vpcs),
         security_groups: compare2(:security_groups),
         route_tables: compare2(:route_tables),
-        route_table_associations: compare(:route_table_associations),
+        route_table_associations: compare2(:route_table_associations),
       }
     end
 

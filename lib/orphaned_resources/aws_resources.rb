@@ -68,7 +68,7 @@ module OrphanedResources
 
     def route_table_associations_for_subnet(subnet_id)
       route_table_association_objects(subnet_id)
-        .map { |hash| hash["route_table_association_id"] }
+        .map {|rta| ResourceTuple.new(id: rta.route_table_association_id) }
     end
 
     def route_table_association_objects(subnet_id)

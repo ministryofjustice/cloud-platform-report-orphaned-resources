@@ -37,7 +37,7 @@ module OrphanedResources
 
     def route_table_associations
       list = local_statefiles.inject([]) { |ids, file| ids << route_table_associations_from_statefile(file) }
-      clean_list(list)
+      clean_list(list).map { |id| ResourceTuple.new(id: id) }
     end
 
     def internet_gateways
