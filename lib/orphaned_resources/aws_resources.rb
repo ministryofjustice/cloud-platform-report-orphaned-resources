@@ -15,7 +15,7 @@ module OrphanedResources
     end
 
     def nat_gateways
-      list = vpcs.map { |id| nat_gateway_ids_for_vpc(id) }
+      list = vpcs.map { |vpc| nat_gateway_ids_for_vpc(vpc.id) }
       clean_list(list)
     end
 
