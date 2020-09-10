@@ -9,7 +9,9 @@ module OrphanedResources
     end
 
     def vpcs
-      @_vpc_ids ||= ec2client.describe_vpcs.vpcs.map { |vpc| vpc.vpc_id }.sort
+      @_vpc_ids ||= ec2client.describe_vpcs.vpcs.map { |vpc|
+        ResourceTuple.new(id: vpc.vpc_id).add_cluster_tag(vpc)
+      }.sort
     end
 
     def nat_gateways

@@ -13,10 +13,11 @@ module OrphanedResources
     end
 
     def vpcs
-      local_statefiles.map { |file|
+      list = local_statefiles.map { |file|
         data = parse_json(file)
         data.dig("outputs", "vpc_id", "value")
-      }.compact
+      }
+      clean_list(list).map { |name| ResourceTuple.new(id: name) }
     end
 
     def nat_gateways
