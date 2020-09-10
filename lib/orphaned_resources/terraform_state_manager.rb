@@ -26,7 +26,7 @@ module OrphanedResources
 
     def subnets
       list = local_statefiles.inject([]) { |ids, file| ids << subnet_ids_from_statefile(file) }
-      clean_list(list)
+      clean_list(list).map { |name| ResourceTuple.new(id: name) }
     end
 
     def route_tables

@@ -79,7 +79,7 @@ module OrphanedResources
     def subnet_ids(vpc_id)
       ec2client.describe_subnets(filters: [{name: "vpc-id", values: [vpc_id]}])
         .subnets
-        .map(&:subnet_id)
+        .map {|sn| ResourceTuple.new(id: sn.subnet_id).add_cluster_tag(sn) }
         .sort
     end
 
