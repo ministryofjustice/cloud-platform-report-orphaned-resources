@@ -32,7 +32,7 @@ module OrphanedResources
 
     def route_tables
       list = local_statefiles.inject([]) { |ids, file| ids << route_tables_from_statefile(file) }
-      clean_list(list)
+      clean_list(list).map { |name| ResourceTuple.new(id: name) }
     end
 
     def route_table_associations

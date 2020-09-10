@@ -21,18 +21,18 @@ module OrphanedResources
 
     def subnets
       @_subnet_ids ||= begin
-                      list = vpcs.map { |id| subnet_ids(id) }
+                      list = vpcs.map { |vpc| subnet_ids(vpc.id) }
                       clean_list(list)
                     end
     end
 
     def route_tables
-      list = subnets.map { |id| route_tables_for_subnet(id) }
+      list = subnets.map { |sn| route_tables_for_subnet(sn.id) }
       clean_list(list)
     end
 
     def route_table_associations
-      list = subnets.map { |id| route_table_associations_for_subnet(id) }
+      list = subnets.map { |sn| route_table_associations_for_subnet(sn.id) }
       clean_list(list)
     end
 
@@ -63,7 +63,7 @@ module OrphanedResources
 
     def route_tables_for_subnet(subnet_id)
       route_table_association_objects(subnet_id)
-        .map(&:route_table_id)
+        .map {|rt| ResourceTuple.new(id: rt.route_table_id) }
     end
 
     def route_table_associations_for_subnet(subnet_id)

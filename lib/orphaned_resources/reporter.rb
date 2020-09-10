@@ -24,7 +24,7 @@ module OrphanedResources
         subnets: compare2(:subnets),
         vpcs: compare2(:vpcs),
         security_groups: compare2(:security_groups),
-        route_tables: compare(:route_tables),
+        route_tables: compare2(:route_tables),
         route_table_associations: compare(:route_table_associations),
       }
     end
