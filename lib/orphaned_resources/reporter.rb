@@ -18,24 +18,20 @@ module OrphanedResources
       )
 
       {
-        nat_gateways: compare2(:nat_gateways),
-        hosted_zones: compare2(:hosted_zones),
-        internet_gateways: compare2(:internet_gateways),
-        subnets: compare2(:subnets),
-        vpcs: compare2(:vpcs),
-        security_groups: compare2(:security_groups),
-        route_tables: compare2(:route_tables),
-        route_table_associations: compare2(:route_table_associations),
+        nat_gateways: compare(:nat_gateways),
+        hosted_zones: compare(:hosted_zones),
+        internet_gateways: compare(:internet_gateways),
+        subnets: compare(:subnets),
+        vpcs: compare(:vpcs),
+        security_groups: compare(:security_groups),
+        route_tables: compare(:route_tables),
+        route_table_associations: compare(:route_table_associations),
       }
     end
 
     private
 
     def compare(method)
-      (@aws.send(method) - @terraform.send(method)).sort
-    end
-
-    def compare2(method)
       ResourceTuple.subtract_lists(
         @aws.send(method),
         @terraform.send(method)
