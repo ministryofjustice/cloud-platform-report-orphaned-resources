@@ -21,7 +21,7 @@ module OrphanedResources
 
     def nat_gateways
       list = local_statefiles.inject([]) { |ids, file| ids << nat_gateway_ids_from_statefile(file) }
-      clean_list(list)
+      clean_list(list).map { |name| ResourceTuple.new(id: name) }
     end
 
     def subnets

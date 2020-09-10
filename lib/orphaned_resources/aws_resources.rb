@@ -86,7 +86,7 @@ module OrphanedResources
     def nat_gateway_ids_for_vpc(vpc_id)
       ec2client.describe_nat_gateways(filter: [{name: "vpc-id", values: [vpc_id]}])
         .nat_gateways
-        .map(&:nat_gateway_id)
+        .map {|ngw| ResourceTuple.new(id: ngw.nat_gateway_id).add_cluster_tag(ngw) }
     end
   end
 end
