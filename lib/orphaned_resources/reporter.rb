@@ -23,7 +23,7 @@ module OrphanedResources
         internet_gateways: compare2(:internet_gateways),
         subnets: compare2(:subnets),
         vpcs: compare2(:vpcs),
-        security_groups: compare(:security_groups),
+        security_groups: compare2(:security_groups),
         route_tables: compare(:route_tables),
         route_table_associations: compare(:route_table_associations),
       }

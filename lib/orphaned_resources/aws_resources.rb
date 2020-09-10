@@ -56,7 +56,7 @@ module OrphanedResources
       list = ec2client.describe_security_groups
         .security_groups
         .map(&:group_id)
-      clean_list(list)
+      clean_list(list).map { |id| ResourceTuple.new(id: id) }
     end
 
     private

@@ -52,7 +52,7 @@ module OrphanedResources
 
     def security_groups
       list = local_statefiles.inject([]) { |ids, file| ids << security_groups_from_statefile(file) }
-      clean_list(list)
+      clean_list(list).map { |name| ResourceTuple.new(id: name) }
     end
 
     private
