@@ -37,7 +37,7 @@ module OrphanedResources
     def internet_gateways
       list = ec2client.describe_internet_gateways
         .internet_gateways
-        .map(&:internet_gateway_id)
+        .map {|igw| ResourceTuple.new(id: igw.internet_gateway_id).add_cluster_tag(igw) }
       clean_list(list)
     end
 
