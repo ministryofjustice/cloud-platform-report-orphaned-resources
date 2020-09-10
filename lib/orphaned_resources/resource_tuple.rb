@@ -22,14 +22,17 @@ module OrphanedResources
       self
     end
 
+    # Enable `.compact` to work on lists of these
     def empty?
       id.nil?
     end
 
+    # Enable `.sort` to work on lists of these
     def <=>(other)
       id <=> other.id
     end
 
+    # Enable `.to_json` to work on lists of these
     def to_json(_json_ext_generator_state)
       {id: id, cluster: cluster}.to_json
     end
