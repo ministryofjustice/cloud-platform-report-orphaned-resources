@@ -6,7 +6,7 @@ module OrphanedResources
     def clean_list(list)
       list
         .flatten
-        .uniq
+        .uniq {|i| i.respond_to?(:id) ? i.id : i }
         .reject(&:nil?)
         .reject(&:empty?)
         .sort
