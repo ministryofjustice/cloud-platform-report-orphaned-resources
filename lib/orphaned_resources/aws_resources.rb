@@ -7,6 +7,7 @@ module OrphanedResources
     ROUTE_TABLE_URL = "https://eu-west-2.console.aws.amazon.com/vpc/home?region=eu-west-2#RouteTables:search="
     SECURITY_GROUP_URL = "https://eu-west-2.console.aws.amazon.com/ec2/v2/home?region=eu-west-2#SecurityGroup:groupId="
     SUBNET_URL = "https://eu-west-2.console.aws.amazon.com/vpc/home?region=eu-west-2#subnets:search="
+    VPC_URL = "https://eu-west-2.console.aws.amazon.com/vpc/home?region=eu-west-2#VpcDetails:VpcId="
 
     def initialize(params)
       @s3client = params.fetch(:s3client)
@@ -16,7 +17,8 @@ module OrphanedResources
 
     def vpcs
       @_vpc_ids ||= ec2client.describe_vpcs.vpcs.map { |vpc|
-        ResourceTuple.new(id: vpc.vpc_id).add_cluster_tag(vpc)
+        url = VPC_URL + vpc.vpc_id
+        ResourceTuple.new(id: vpc.vpc_id, aws_console_url: url).add_cluster_tag(vpc)
       }.sort
     end
 
