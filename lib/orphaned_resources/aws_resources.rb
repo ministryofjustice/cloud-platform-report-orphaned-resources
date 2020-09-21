@@ -6,6 +6,7 @@ module OrphanedResources
     INTERNET_GATEWAY_URL = "https://eu-west-2.console.aws.amazon.com/vpc/home?region=eu-west-2#InternetGateway:internetGatewayId="
     ROUTE_TABLE_URL = "https://eu-west-2.console.aws.amazon.com/vpc/home?region=eu-west-2#RouteTables:search="
     SECURITY_GROUP_URL = "https://eu-west-2.console.aws.amazon.com/ec2/v2/home?region=eu-west-2#SecurityGroup:groupId="
+    SUBNET_URL = "https://eu-west-2.console.aws.amazon.com/vpc/home?region=eu-west-2#subnets:search="
 
     def initialize(params)
       @s3client = params.fetch(:s3client)
@@ -100,7 +101,9 @@ module OrphanedResources
     def subnet_ids(vpc_id)
       ec2client.describe_subnets(filters: [{name: "vpc-id", values: [vpc_id]}])
         .subnets
-        .map {|sn| ResourceTuple.new(id: sn.subnet_id).add_cluster_tag(sn) }
+        .map {|sn|
+          url = SUBNET_URL + sn.subnet_id
+          ResourceTuple.new(id: sn.subnet_id, aws_console_url: url).add_cluster_tag(sn) }
         .sort
     end
 
