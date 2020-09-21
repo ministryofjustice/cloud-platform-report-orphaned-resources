@@ -49,9 +49,14 @@ module OrphanedResources
     def hosted_zones
       list = route53client
         .list_hosted_zones
-        .hosted_zones.map(&:name)
-        .map { |name| name.sub(/\.$/, "") } # trim trailing '.'
-      clean_list(list).map { |name| ResourceTuple.new(id: name) }
+        .hosted_zones
+        .map { |z|
+          HostedZoneTuple.new(
+            id: z.name.sub(/\.$/, ""), # trim trailing '.'
+            hosted_zone_id: z.id
+          )
+        }
+      clean_list(list)
     end
 
     def security_groups
