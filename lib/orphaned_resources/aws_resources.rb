@@ -3,6 +3,7 @@ module OrphanedResources
     attr_reader :s3client, :ec2client, :route53client
 
     NAT_GATEWAY_URL = "https://eu-west-2.console.aws.amazon.com/vpc/home?region=eu-west-2#NatGatewayDetails:natGatewayId="
+    INTERNET_GATEWAY_URL = "https://eu-west-2.console.aws.amazon.com/vpc/home?region=eu-west-2#InternetGateway:internetGatewayId="
 
     def initialize(params)
       @s3client = params.fetch(:s3client)
@@ -41,7 +42,10 @@ module OrphanedResources
     def internet_gateways
       list = ec2client.describe_internet_gateways
         .internet_gateways
-        .map {|igw| ResourceTuple.new(id: igw.internet_gateway_id).add_cluster_tag(igw) }
+        .map {|igw|
+          url = INTERNET_GATEWAY_URL + igw.internet_gateway_id
+          ResourceTuple.new(id: igw.internet_gateway_id, aws_console_url: url).add_cluster_tag(igw)
+        }
       clean_list(list)
     end
 
