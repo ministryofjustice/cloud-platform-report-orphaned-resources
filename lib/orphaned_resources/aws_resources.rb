@@ -2,6 +2,8 @@ module OrphanedResources
   class AwsResources < Lister
     attr_reader :s3client, :ec2client, :route53client
 
+    NAT_GATEWAY_URL = "https://eu-west-2.console.aws.amazon.com/vpc/home?region=eu-west-2#NatGatewayDetails:natGatewayId="
+
     def initialize(params)
       @s3client = params.fetch(:s3client)
       @ec2client = params.fetch(:ec2client)
@@ -88,7 +90,10 @@ module OrphanedResources
     def nat_gateway_ids_for_vpc(vpc_id)
       ec2client.describe_nat_gateways(filter: [{name: "vpc-id", values: [vpc_id]}])
         .nat_gateways
-        .map {|ngw| ResourceTuple.new(id: ngw.nat_gateway_id).add_cluster_tag(ngw) }
+        .map {|ngw|
+          url = NAT_GATEWAY_URL + ngw.nat_gateway_id
+          ResourceTuple.new(id: ngw.nat_gateway_id, aws_console_url: url).add_cluster_tag(ngw)
+        }
     end
   end
 end

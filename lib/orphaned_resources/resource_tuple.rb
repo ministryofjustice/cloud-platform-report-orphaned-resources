@@ -1,11 +1,12 @@
 module OrphanedResources
   # Class to represent an AWS resource, for the purposes of the orphaned resources report
   class ResourceTuple
-    attr_reader :id, :cluster
+    attr_reader :id, :cluster, :aws_console_url
 
     def initialize(params)
       @id = params.fetch(:id)
       @cluster = params.fetch(:cluster, "")
+      @aws_console_url = params.fetch(:aws_console_url, "")
     end
 
     # Subtract one list of ResourceTuple objects from another
@@ -34,7 +35,11 @@ module OrphanedResources
 
     # Enable `.to_json` to work on lists of these
     def to_json(_json_ext_generator_state)
-      {id: id, cluster: cluster}.to_json
+      {
+        id: id,
+        cluster: cluster,
+        aws_console_url: aws_console_url,
+      }.to_json
     end
   end
 end
