@@ -5,6 +5,7 @@ module OrphanedResources
     NAT_GATEWAY_URL = "https://eu-west-2.console.aws.amazon.com/vpc/home?region=eu-west-2#NatGatewayDetails:natGatewayId="
     INTERNET_GATEWAY_URL = "https://eu-west-2.console.aws.amazon.com/vpc/home?region=eu-west-2#InternetGateway:internetGatewayId="
     ROUTE_TABLE_URL = "https://eu-west-2.console.aws.amazon.com/vpc/home?region=eu-west-2#RouteTables:search="
+    SECURITY_GROUP_URL = "https://eu-west-2.console.aws.amazon.com/ec2/v2/home?region=eu-west-2#SecurityGroup:groupId="
 
     def initialize(params)
       @s3client = params.fetch(:s3client)
@@ -68,7 +69,10 @@ module OrphanedResources
       list = ec2client.describe_security_groups
         .security_groups
         .map(&:group_id)
-      clean_list(list).map { |id| ResourceTuple.new(id: id) }
+      clean_list(list).map { |id|
+        url = SECURITY_GROUP_URL + id
+        ResourceTuple.new(id: id, aws_console_url: url)
+      }
     end
 
     private
