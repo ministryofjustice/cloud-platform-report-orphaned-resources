@@ -11,8 +11,6 @@ module OrphanedResources
     SUBNET_URL = VPC_HOME + "#subnets:search="
     VPC_URL = VPC_HOME + "#VpcDetails:VpcId="
 
-    SECURITY_GROUP_URL = EC2_HOME + "#SecurityGroup:groupId="
-
     def initialize(params)
       @s3client = params.fetch(:s3client)
       @ec2client = params.fetch(:ec2client)
@@ -70,16 +68,6 @@ module OrphanedResources
           )
         }
       clean_list(list)
-    end
-
-    def security_groups
-      list = ec2client.describe_security_groups
-        .security_groups
-        .map(&:group_id)
-      clean_list(list).map { |id|
-        url = SECURITY_GROUP_URL + id
-        ResourceTuple.new(id: id, aws_console_url: url)
-      }
     end
 
     private
