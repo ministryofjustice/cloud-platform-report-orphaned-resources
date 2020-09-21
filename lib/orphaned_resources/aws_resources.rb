@@ -4,6 +4,7 @@ module OrphanedResources
 
     NAT_GATEWAY_URL = "https://eu-west-2.console.aws.amazon.com/vpc/home?region=eu-west-2#NatGatewayDetails:natGatewayId="
     INTERNET_GATEWAY_URL = "https://eu-west-2.console.aws.amazon.com/vpc/home?region=eu-west-2#InternetGateway:internetGatewayId="
+    ROUTE_TABLE_URL = "https://eu-west-2.console.aws.amazon.com/vpc/home?region=eu-west-2#RouteTables:search="
 
     def initialize(params)
       @s3client = params.fetch(:s3client)
@@ -74,7 +75,10 @@ module OrphanedResources
 
     def route_tables_for_subnet(subnet_id)
       route_table_association_objects(subnet_id)
-        .map {|rt| ResourceTuple.new(id: rt.route_table_id) }
+        .map {|rt|
+          url = ROUTE_TABLE_URL + rt.route_table_id
+          ResourceTuple.new(id: rt.route_table_id, aws_console_url: url)
+        }
     end
 
     def route_table_associations_for_subnet(subnet_id)
