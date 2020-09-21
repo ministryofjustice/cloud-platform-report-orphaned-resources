@@ -2,12 +2,16 @@ module OrphanedResources
   class AwsResources < Lister
     attr_reader :s3client, :ec2client, :route53client
 
-    NAT_GATEWAY_URL = "https://eu-west-2.console.aws.amazon.com/vpc/home?region=eu-west-2#NatGatewayDetails:natGatewayId="
-    INTERNET_GATEWAY_URL = "https://eu-west-2.console.aws.amazon.com/vpc/home?region=eu-west-2#InternetGateway:internetGatewayId="
-    ROUTE_TABLE_URL = "https://eu-west-2.console.aws.amazon.com/vpc/home?region=eu-west-2#RouteTables:search="
-    SECURITY_GROUP_URL = "https://eu-west-2.console.aws.amazon.com/ec2/v2/home?region=eu-west-2#SecurityGroup:groupId="
-    SUBNET_URL = "https://eu-west-2.console.aws.amazon.com/vpc/home?region=eu-west-2#subnets:search="
-    VPC_URL = "https://eu-west-2.console.aws.amazon.com/vpc/home?region=eu-west-2#VpcDetails:VpcId="
+    VPC_HOME = "https://eu-west-2.console.aws.amazon.com/vpc/home?region=eu-west-2"
+    EC2_HOME = "https://eu-west-2.console.aws.amazon.com/ec2/v2/home?region=eu-west-2"
+
+    NAT_GATEWAY_URL = VPC_HOME + "#NatGatewayDetails:natGatewayId="
+    INTERNET_GATEWAY_URL = VPC_HOME + "#InternetGateway:internetGatewayId="
+    ROUTE_TABLE_URL = VPC_HOME + "#RouteTables:search="
+    SUBNET_URL = VPC_HOME + "#subnets:search="
+    VPC_URL = VPC_HOME + "#VpcDetails:VpcId="
+
+    SECURITY_GROUP_URL = EC2_HOME + "#SecurityGroup:groupId="
 
     def initialize(params)
       @s3client = params.fetch(:s3client)
