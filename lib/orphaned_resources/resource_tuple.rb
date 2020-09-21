@@ -17,7 +17,7 @@ module OrphanedResources
 
     def add_cluster_tag(resource)
       if resource.respond_to?(:tags)
-        t = resource.tags.find {|tag| tag.key.downcase == "cluster"}
+        t = resource.tags.find { |tag| tag.key.downcase == "cluster" }
         @cluster = t.value unless t.nil?
       end
       self

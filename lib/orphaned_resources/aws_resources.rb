@@ -51,7 +51,7 @@ module OrphanedResources
     def internet_gateways
       list = ec2client.describe_internet_gateways
         .internet_gateways
-        .map {|igw|
+        .map { |igw|
           url = INTERNET_GATEWAY_URL + igw.internet_gateway_id
           ResourceTuple.new(id: igw.internet_gateway_id, aws_console_url: url).add_cluster_tag(igw)
         }
@@ -86,7 +86,7 @@ module OrphanedResources
 
     def route_tables_for_subnet(subnet_id)
       route_table_association_objects(subnet_id)
-        .map {|rt|
+        .map { |rt|
           url = ROUTE_TABLE_URL + rt.route_table_id
           ResourceTuple.new(id: rt.route_table_id, aws_console_url: url)
         }
@@ -94,7 +94,7 @@ module OrphanedResources
 
     def route_table_associations_for_subnet(subnet_id)
       route_table_association_objects(subnet_id)
-        .map {|rta| ResourceTuple.new(id: rta.route_table_association_id) }
+        .map { |rta| ResourceTuple.new(id: rta.route_table_association_id) }
     end
 
     def route_table_association_objects(subnet_id)
@@ -107,16 +107,17 @@ module OrphanedResources
     def subnet_ids(vpc_id)
       ec2client.describe_subnets(filters: [{name: "vpc-id", values: [vpc_id]}])
         .subnets
-        .map {|sn|
-          url = SUBNET_URL + sn.subnet_id
-          ResourceTuple.new(id: sn.subnet_id, aws_console_url: url).add_cluster_tag(sn) }
+        .map { |sn|
+        url = SUBNET_URL + sn.subnet_id
+        ResourceTuple.new(id: sn.subnet_id, aws_console_url: url).add_cluster_tag(sn)
+      }
         .sort
     end
 
     def nat_gateway_ids_for_vpc(vpc_id)
       ec2client.describe_nat_gateways(filter: [{name: "vpc-id", values: [vpc_id]}])
         .nat_gateways
-        .map {|ngw|
+        .map { |ngw|
           url = NAT_GATEWAY_URL + ngw.nat_gateway_id
           ResourceTuple.new(id: ngw.nat_gateway_id, aws_console_url: url).add_cluster_tag(ngw)
         }

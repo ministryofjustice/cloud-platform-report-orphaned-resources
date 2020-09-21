@@ -59,10 +59,10 @@ module OrphanedResources
 
     def internet_gateways_from_statefile(file)
       json_resources(file)
-        .find_all {|h| h["name"] == "public_internet_gateway" }
+        .find_all { |h| h["name"] == "public_internet_gateway" }
         .map { |h| h["instances"] }
         .flatten
-        .map {|h| h.dig("attributes", "gateway_id")}
+        .map { |h| h.dig("attributes", "gateway_id") }
     end
 
     def route_tables_from_statefile(file)
@@ -75,7 +75,7 @@ module OrphanedResources
         .find_all { |res| res["type"] == "aws_route_table_association" }
         .map { |res| res["instances"] }
         .flatten
-        .map {|res| res.dig("attributes", "id") }
+        .map { |res| res.dig("attributes", "id") }
     end
 
     def subnet_ids_from_statefile(file)
@@ -97,7 +97,7 @@ module OrphanedResources
         .find_all { |res| res["type"] == "aws_route53_zone" }
         .map { |zone| zone["instances"] }
         .flatten
-        .map {|inst| inst.dig("attributes", "name")}
+        .map { |inst| inst.dig("attributes", "name") }
     end
 
     def security_groups_from_statefile(file)
@@ -105,7 +105,7 @@ module OrphanedResources
         .find_all { |res| res["type"] == "aws_security_group" }
         .map { |res| res["instances"] }
         .flatten
-        .map {|inst| inst.dig("attributes", "id") }
+        .map { |inst| inst.dig("attributes", "id") }
     end
 
     def download_files
@@ -119,7 +119,7 @@ module OrphanedResources
     def download_file(key)
       outfile = File.join(cache_dir, key)
       d = File.dirname(outfile)
-      FileUtils.mkdir_p(d) unless Dir.exists?(d)
+      FileUtils.mkdir_p(d) unless Dir.exist?(d)
       s3client.bucket(bucket).object(key).get(response_target: outfile) unless FileTest.exists?(outfile)
       outfile
     end
