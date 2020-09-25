@@ -1,5 +1,7 @@
 # Orphaned AWS Reporter
 
+[![Releases](https://img.shields.io/github/release/ministryofjustice/cloud-platform-report-orphaned-resources/all.svg?style=flat-square)](https://github.com/ministryofjustice/cloud-platform-report-orphaned-resources/releases)
+
 Output a JSON document, suitable for posting to [How Out Of Date Are We],
 listing all the AWS resources which exist but are not mentioned in any of the
 `terraform.tfstate` files in the Cloud Platform terraform state S3 bucket.
