@@ -11,6 +11,10 @@ module OrphanedResources
     SUBNET_URL = VPC_HOME + "#subnets:search="
     VPC_URL = VPC_HOME + "#VpcDetails:VpcId="
 
+    # The default VPC and its subnets etc. comes with the account, so it's not
+    # managed in code, but it cannot be deleted.
+    DEFAULT_VPC_ID = "vpc-057ac86d"
+
     def initialize(params)
       @s3client = params.fetch(:s3client)
       @ec2client = params.fetch(:ec2client)
@@ -21,7 +25,8 @@ module OrphanedResources
       @_vpc_ids ||= ec2client.describe_vpcs.vpcs.map { |vpc|
         url = VPC_URL + vpc.vpc_id
         ResourceTuple.new(id: vpc.vpc_id, aws_console_url: url).add_cluster_tag(vpc)
-      }.sort
+      }.reject { |vpc| vpc.id == DEFAULT_VPC_ID }
+        .sort
     end
 
     def nat_gateways
