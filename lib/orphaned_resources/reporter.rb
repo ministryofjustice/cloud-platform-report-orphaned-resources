@@ -27,6 +27,7 @@ module OrphanedResources
         vpcs: compare(:vpcs),
         route_tables: compare(:route_tables),
         route_table_associations: compare(:route_table_associations),
+        rds: compare(:rds),
       }
     end
 
