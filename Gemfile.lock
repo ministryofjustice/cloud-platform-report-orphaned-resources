@@ -17,6 +17,9 @@ GEM
     aws-sdk-kms (1.36.0)
       aws-sdk-core (~> 3, >= 3.99.0)
       aws-sigv4 (~> 1.1)
+    aws-sdk-rds (1.100.0)
+      aws-sdk-core (~> 3, >= 3.99.0)
+      aws-sigv4 (~> 1.1)
     aws-sdk-route53 (1.40.0)
       aws-sdk-core (~> 3, >= 3.99.0)
       aws-sigv4 (~> 1.1)
@@ -52,6 +55,7 @@ PLATFORMS
 DEPENDENCIES
   aws-sdk-autoscaling (~> 1.44)
   aws-sdk-ec2
+  aws-sdk-rds
   aws-sdk-route53 (~> 1.40)
   aws-sdk-s3
   json (>= 2.3.1)

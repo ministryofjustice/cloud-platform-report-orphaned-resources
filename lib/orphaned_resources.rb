@@ -3,6 +3,7 @@ require "json"
 require "aws-sdk-ec2"
 require "aws-sdk-s3"
 require "aws-sdk-route53"
+require "aws-sdk-rds"
 
 require_relative "./orphaned_resources/lister"
 require_relative "./orphaned_resources/terraform_state_manager"
