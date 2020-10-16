@@ -78,17 +78,23 @@ module OrphanedResources
     end
 
     def rds
-      list = rdsclient
-        .describe_db_instances
-        .db_instances
-        .map { |db|
-          id = db.db_instance_identifier
-          ResourceTuple.new(
-            id: id,
-            aws_console_url: RDS_HOME + "#database:id=#{id};is-cluster=false"
-          )
-        }
-      clean_list(list)
+      list = []
+      marker = nil
+
+      loop do
+        rtn = rdsclient.describe_db_instances(marker: marker)
+        list += rtn.db_instances
+        marker = rtn.marker
+        break if marker.nil?
+      end
+
+      list.map { |db|
+        id = db.db_instance_identifier
+        ResourceTuple.new(
+          id: id,
+          aws_console_url: RDS_HOME + "#database:id=#{id};is-cluster=false"
+        )
+      }
     end
 
     private
