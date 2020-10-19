@@ -4,11 +4,13 @@ module OrphanedResources
       s3 = Aws::S3::Resource.new(region: "eu-west-1", profile: ENV["AWS_PROFILE"])
       ec2 = Aws::EC2::Client.new(region: "eu-west-2", profile: ENV["AWS_PROFILE"])
       route53 = Aws::Route53::Client.new(region: "eu-west-2", profile: ENV["AWS_PROFILE"])
+      rds = Aws::RDS::Client.new(region: "eu-west-2", profile: ENV["AWS_PROFILE"])
 
       @aws = OrphanedResources::AwsResources.new(
         s3client: s3,
         ec2client: ec2,
         route53client: route53,
+        rdsclient: rds,
       )
 
       @terraform = OrphanedResources::TerraformStateManager.new(
@@ -25,6 +27,7 @@ module OrphanedResources
         vpcs: compare(:vpcs),
         route_tables: compare(:route_tables),
         route_table_associations: compare(:route_table_associations),
+        rds: compare(:rds),
       }
     end
 

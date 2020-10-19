@@ -4,6 +4,7 @@ source "https://rubygems.org"
 
 git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 
+gem "aws-sdk-rds"
 gem "aws-sdk-ec2"
 gem "aws-sdk-s3"
 gem "aws-sdk-autoscaling", "~> 1.44"

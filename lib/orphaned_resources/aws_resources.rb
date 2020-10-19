@@ -1,9 +1,10 @@
 module OrphanedResources
   class AwsResources < Lister
-    attr_reader :s3client, :ec2client, :route53client
+    attr_reader :s3client, :ec2client, :route53client, :rdsclient
 
     VPC_HOME = "https://eu-west-2.console.aws.amazon.com/vpc/home?region=eu-west-2"
     EC2_HOME = "https://eu-west-2.console.aws.amazon.com/ec2/v2/home?region=eu-west-2"
+    RDS_HOME = "https://eu-west-2.console.aws.amazon.com/rds/home?region=eu-west-2"
 
     NAT_GATEWAY_URL = VPC_HOME + "#NatGatewayDetails:natGatewayId="
     INTERNET_GATEWAY_URL = VPC_HOME + "#InternetGateway:internetGatewayId="
@@ -19,6 +20,7 @@ module OrphanedResources
       @s3client = params.fetch(:s3client)
       @ec2client = params.fetch(:ec2client)
       @route53client = params.fetch(:route53client)
+      @rdsclient = params.fetch(:rdsclient)
     end
 
     def vpcs
@@ -73,6 +75,26 @@ module OrphanedResources
           )
         }
       clean_list(list)
+    end
+
+    def rds
+      list = []
+      marker = nil
+
+      loop do
+        rtn = rdsclient.describe_db_instances(marker: marker)
+        list += rtn.db_instances
+        marker = rtn.marker
+        break if marker.nil?
+      end
+
+      list.map { |db|
+        id = db.db_instance_identifier
+        ResourceTuple.new(
+          id: id,
+          aws_console_url: RDS_HOME + "#database:id=#{id};is-cluster=false"
+        )
+      }
     end
 
     private
