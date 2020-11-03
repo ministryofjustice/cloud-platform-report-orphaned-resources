@@ -55,6 +55,11 @@ module OrphanedResources
       clean_list(list).map { |id| ResourceTuple.new(id: id) }
     end
 
+    def rds_cluster
+      list = local_statefiles.inject([]) { |ids, file| ids << rds_cluster_from_statefile(file) }
+      clean_list(list).map { |id| ResourceTuple.new(id: id) }
+    end
+
     private
 
     def internet_gateways_from_statefile(file)
@@ -102,10 +107,16 @@ module OrphanedResources
 
     def rds_from_statefile(file)
       json_resources(file)
-      .find_all { |r| r["type"] == "aws_db_instance" }
+      .find_all { |r| r["type"] == "aws_db_instance" || r["type"] == "aws_rds_cluster_instance" }
       .map { |rds| rds["instances"] }.flatten
-      .map { |i| i.dig("attributes", "address") }
-      .map { |name| name.sub(/\..*/, "") }
+      .map { |i| i.dig("attributes", "identifier") }
+    end
+
+    def rds_cluster_from_statefile(file)
+      json_resources(file)
+      .find_all { |r| r["type"] == "aws_rds_cluster" }
+      .map { |rds| rds["instances"] }.flatten
+      .map { |i| i.dig("attributes", "cluster_identifier") }
     end
 
     def download_files
