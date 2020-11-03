@@ -20,14 +20,15 @@ module OrphanedResources
       )
 
       {
-        nat_gateways: compare(:nat_gateways),
-        hosted_zones: compare(:hosted_zones),
-        internet_gateways: compare(:internet_gateways),
-        subnets: compare(:subnets),
-        vpcs: compare(:vpcs),
-        route_tables: compare(:route_tables),
-        route_table_associations: compare(:route_table_associations),
+        # nat_gateways: compare(:nat_gateways),
+        # hosted_zones: compare(:hosted_zones),
+        # internet_gateways: compare(:internet_gateways),
+        # subnets: compare(:subnets),
+        # vpcs: compare(:vpcs),
+        # route_tables: compare(:route_tables),
+        # route_table_associations: compare(:route_table_associations),
         rds: compare(:rds),
+        # rds_cluster: compare(:rds_cluster),
       }
     end
 
