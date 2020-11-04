@@ -28,6 +28,7 @@ module OrphanedResources
         route_tables: compare(:route_tables),
         route_table_associations: compare(:route_table_associations),
         rds: compare(:rds),
+        rds_cluster: compare(:rds_cluster),
       }
     end
 

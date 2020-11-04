@@ -97,6 +97,27 @@ module OrphanedResources
       }
     end
 
+    def rds_cluster
+      list = []
+      marker = nil
+
+      loop do
+        rtn = rdsclient.describe_db_clusters(marker: marker)
+        list += rtn.db_clusters
+        marker = rtn.marker
+        break if marker.nil?
+      end
+
+      list.map { |db|
+        id = db.db_cluster_identifier
+        ResourceTuple.new(
+          id: id,
+          aws_console_url: RDS_HOME + "#database:id=#{id};is-cluster=true"
+        )
+      }
+    end
+
+
     private
 
     def route_tables_for_subnet(subnet_id)
