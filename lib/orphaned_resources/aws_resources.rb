@@ -112,7 +112,7 @@ module OrphanedResources
         id = db.db_cluster_identifier
         ResourceTuple.new(
           id: id,
-          aws_console_url: RDS_HOME + "#database:id=#{id};is-cluster=false"
+          aws_console_url: RDS_HOME + "#database:id=#{id};is-cluster=true"
         )
       }
     end
