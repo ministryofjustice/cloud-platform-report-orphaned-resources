@@ -16,6 +16,11 @@ module OrphanedResources
     # managed in code, but it cannot be deleted.
     DEFAULT_VPC_ID = "vpc-057ac86d"
 
+    # These zones are not managed in terraform, and we're OK with that.
+    IGNORE_ZONE_NAMES = [
+      "integrationtest.service.justice.gov.uk"
+    ]
+
     def initialize(params)
       @s3client = params.fetch(:s3client)
       @ec2client = params.fetch(:ec2client)
@@ -73,7 +78,7 @@ module OrphanedResources
             id: z.name.sub(/\.$/, ""), # trim trailing '.'
             hosted_zone_id: z.id
           )
-        }
+        }.reject { |z| IGNORE_ZONE_NAMES.include?(z.id) }
       clean_list(list)
     end
 
