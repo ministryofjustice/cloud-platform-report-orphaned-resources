@@ -103,6 +103,7 @@ module OrphanedResources
         .map { |zone| zone["instances"] }
         .flatten
         .map { |inst| inst.dig("attributes", "name") }
+        .map { |name| name.sub(/\.$/, "") } # trim trailing '.'
     end
 
     def rds_from_statefile(file)
