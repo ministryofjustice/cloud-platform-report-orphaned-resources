@@ -15,7 +15,7 @@ module OrphanedResources
     def vpcs
       list = local_statefiles.map { |file|
         data = parse_json(file)
-        data.dig("outputs", "vpc_id", "value")
+        data.dig("outputs", "network_id", "value")
       }
       clean_list(list).map { |id| ResourceTuple.new(id: id) }
     end
@@ -64,10 +64,10 @@ module OrphanedResources
 
     def internet_gateways_from_statefile(file)
       json_resources(file)
-        .find_all { |h| h["name"] == "public_internet_gateway" }
-        .map { |h| h["instances"] }
+        .filter {|h| h["type"] == "aws_internet_gateway"}
+        .map { |h| h["instances"]}
         .flatten
-        .map { |h| h.dig("attributes", "gateway_id") }
+        .map {|h| h.dig("attributes", "id")}
     end
 
     def route_tables_from_statefile(file)
@@ -85,7 +85,13 @@ module OrphanedResources
 
     def subnet_ids_from_statefile(file)
       data = parse_json(file)
-      data.dig("outputs", "external_subnets_ids", "value").to_a + data.dig("outputs", "internal_subnets_ids", "value").to_a
+
+      resource_instance_values = data.fetch("resources", []).map {|h| h.fetch("instances", [])}.flatten.map { |h| h.dig("attributes", "outputs", "value") }.compact
+
+      external = resource_instance_values.map { |h| h["external_subnets_ids"] }.compact
+      internal = resource_instance_values.map { |h| h["internal_subnets_ids"] }.compact
+
+      (external + internal).sort.uniq
     end
 
     def nat_gateway_ids_from_statefile(file)
