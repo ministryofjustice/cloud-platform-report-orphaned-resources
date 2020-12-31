@@ -1,4 +1,6 @@
-# Orphaned AWS Reporter
+# DEPRECATED Orphaned AWS Reporter
+
+This code has been moved [here](https://github.com/ministryofjustice/cloud-platform-how-out-of-date-are-we)
 
 [![Releases](https://img.shields.io/github/release/ministryofjustice/cloud-platform-report-orphaned-resources/all.svg?style=flat-square)](https://github.com/ministryofjustice/cloud-platform-report-orphaned-resources/releases)
 
